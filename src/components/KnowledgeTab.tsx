@@ -1,18 +1,35 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { Send, User, Bot } from 'lucide-react';
+
+interface ChatMessage {
+  id: string;
+  content: string;
+  isUser: boolean;
+  timestamp: Date;
+}
 
 export const KnowledgeTab = () => {
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [hasApiKey, setHasApiKey] = useState(false);
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSaveApiKey = () => {
     if (!apiKey.trim()) {
@@ -33,8 +50,8 @@ export const KnowledgeTab = () => {
     });
   };
 
-  const handleAskQuestion = async () => {
-    if (!question.trim()) {
+  const handleSendMessage = async () => {
+    if (!currentQuestion.trim()) {
       toast({
         title: "Error",
         description: "Please enter a question",
@@ -43,12 +60,28 @@ export const KnowledgeTab = () => {
       return;
     }
 
+    // Add user message
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      content: currentQuestion,
+      isUser: true,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentQuestion('');
     setLoading(true);
+
     try {
-      // Placeholder for Gemini API integration
-      // This would be replaced with actual Gemini API call
+      // Simulate API call - replace with actual Gemini API integration
       setTimeout(() => {
-        setAnswer("This is a placeholder response. Once you provide your Gemini API key and integrate the API, this will return AI-powered answers about cryptocurrency topics.");
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          content: "This is a placeholder response about cryptocurrency. Once you integrate the Gemini API, this will return AI-powered answers about crypto topics, DeFi, blockchain technology, and trading strategies.",
+          isUser: false,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, botMessage]);
         setLoading(false);
       }, 2000);
     } catch (error) {
@@ -60,6 +93,17 @@ export const KnowledgeTab = () => {
       });
       setLoading(false);
     }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleExampleClick = (example: string) => {
+    setCurrentQuestion(example);
   };
 
   useEffect(() => {
@@ -101,44 +145,76 @@ export const KnowledgeTab = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-[calc(100vh-200px)] space-y-4">
       <h2 className="text-2xl font-bold text-white">Crypto Knowledge Assistant</h2>
       
-      <Card className="crypto-card">
-        <CardHeader>
-          <CardTitle className="text-white">Ask a Question</CardTitle>
+      {/* Chat Messages Area */}
+      <Card className="crypto-card flex-1 flex flex-col">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-white text-lg">Chat</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Textarea
-            placeholder="Ask anything about cryptocurrency, blockchain, DeFi, or trading..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="bg-black/20 border-white/20 text-white min-h-[100px]"
-          />
-          <Button 
-            onClick={handleAskQuestion} 
-            disabled={loading || !question.trim()}
-            className="w-full crypto-gradient"
-          >
-            {loading ? 'Thinking...' : 'Ask Question'}
-          </Button>
+        <CardContent className="flex-1 flex flex-col">
+          <ScrollArea className="flex-1 pr-4">
+            <div className="space-y-4">
+              {messages.length === 0 && (
+                <div className="text-center text-slate-400 py-8">
+                  <Bot className="mx-auto mb-2 h-8 w-8" />
+                  <p>Start a conversation by asking about cryptocurrency, blockchain, or DeFi!</p>
+                </div>
+              )}
+              
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex gap-3 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.isUser ? 'bg-blue-600' : 'bg-slate-600'
+                    }`}>
+                      {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
+                    </div>
+                    <div className={`rounded-lg px-4 py-2 ${
+                      message.isUser 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-slate-700 text-slate-200'
+                    }`}>
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-xs opacity-70 mt-1">
+                        {message.timestamp.toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {loading && (
+                <div className="flex gap-3 justify-start">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-slate-700 text-slate-200 rounded-lg px-4 py-2">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
         </CardContent>
       </Card>
 
-      {answer && (
-        <Card className="crypto-card">
-          <CardHeader>
-            <CardTitle className="text-white">Answer</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-200 whitespace-pre-wrap">{answer}</p>
-          </CardContent>
-        </Card>
-      )}
-
+      {/* Example Questions */}
       <Card className="crypto-card">
-        <CardHeader>
-          <CardTitle className="text-white">Example Questions</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-white text-sm">Example Questions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2 md:grid-cols-2">
@@ -151,12 +227,36 @@ export const KnowledgeTab = () => {
               <Button
                 key={index}
                 variant="outline"
-                className="text-left justify-start border-white/20 text-slate-300 hover:bg-white/10"
-                onClick={() => setQuestion(example)}
+                size="sm"
+                className="text-left justify-start border-white/20 text-slate-300 hover:bg-white/10 h-auto py-2 px-3"
+                onClick={() => handleExampleClick(example)}
               >
                 {example}
               </Button>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Chat Input */}
+      <Card className="crypto-card">
+        <CardContent className="pt-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Ask anything about cryptocurrency, blockchain, DeFi, or trading..."
+              value={currentQuestion}
+              onChange={(e) => setCurrentQuestion(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="bg-black/20 border-white/20 text-white flex-1"
+              disabled={loading}
+            />
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={loading || !currentQuestion.trim()}
+              className="crypto-gradient px-4"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
