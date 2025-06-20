@@ -56,10 +56,7 @@ export class FirecrawlService {
         },
         body: JSON.stringify({
           query: query,
-          limit: 20,
-          searchOptions: {
-            limit: 20
-          }
+          limit: 20
         }),
       });
 

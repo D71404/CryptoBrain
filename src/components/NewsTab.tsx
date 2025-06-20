@@ -23,6 +23,7 @@ export const NewsTab = () => {
 
   useEffect(() => {
     const savedKey = FirecrawlService.getApiKey();
+    console.log('Checking for saved API key:', savedKey ? 'Found' : 'Not found');
     if (savedKey) {
       setHasApiKey(true);
       fetchNews();
@@ -39,6 +40,7 @@ export const NewsTab = () => {
       return;
     }
 
+    console.log('Testing API key...');
     const isValid = await FirecrawlService.testApiKey(apiKey);
     if (isValid) {
       FirecrawlService.saveApiKey(apiKey);
@@ -64,6 +66,10 @@ export const NewsTab = () => {
       const result = await FirecrawlService.searchNews('cryptocurrency bitcoin ethereum latest news');
       if (result.success && result.data) {
         setNews(result.data.slice(0, 10));
+        toast({
+          title: "Success",
+          description: `Fetched ${result.data.length} news articles`,
+        });
       } else {
         toast({
           title: "Error",
