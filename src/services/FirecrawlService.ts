@@ -1,4 +1,3 @@
-
 interface SearchResult {
   title: string;
   description: string;
@@ -8,6 +7,7 @@ interface SearchResult {
 
 export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
+  private static DEFAULT_API_KEY = 'fc-9fec8849f6c2480eb5945a8ede81292c';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -15,7 +15,13 @@ export class FirecrawlService {
   }
 
   static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    const savedKey = localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    if (savedKey) {
+      return savedKey;
+    }
+    // Auto-set the default API key if none is saved
+    this.saveApiKey(this.DEFAULT_API_KEY);
+    return this.DEFAULT_API_KEY;
   }
 
   static async testApiKey(apiKey: string): Promise<boolean> {
