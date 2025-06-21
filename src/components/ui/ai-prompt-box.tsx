@@ -1,7 +1,7 @@
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode } from 'lucide-react';
+import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode, Newspaper, BarChart3, Search } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
 // Utility function for className merging
@@ -428,10 +428,7 @@ const PromptInputAction: React.FC<PromptInputActionProps> = ({
 const CustomDivider: React.FC = () => (
   <div className="relative h-6 w-[1.5px] mx-1">
     <div
-      className="absolute inset-0 bg-gradient-to-t from-transparent via-orange-500/70 to-transparent rounded-full"
-      style={{
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 40%, 140% 50%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, -40% 50%, 0% 40%)",
-      }}
+      className="absolute inset-0 bg-gradient-to-t from-transparent via-gray-500/50 to-transparent rounded-full"
     />
   </div>
 );
@@ -442,15 +439,43 @@ interface PromptInputBoxProps {
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
+  activeSection?: 'news' | 'stats' | 'knowledge' | 'smart-search';
 }
+
+const SECTION_BUTTONS = {
+  news: {
+    icon: Newspaper,
+    label: 'News',
+    color: 'text-blue-400',
+    activeColor: 'bg-blue-500/15 border-blue-500 text-blue-400',
+  },
+  stats: {
+    icon: BarChart3,
+    label: 'Stats',
+    color: 'text-green-400',
+    activeColor: 'bg-green-500/15 border-green-500 text-green-400',
+  },
+  knowledge: {
+    icon: BrainCog,
+    label: 'Knowledge',
+    color: 'text-purple-400',
+    activeColor: 'bg-purple-500/15 border-purple-500 text-purple-400',
+  },
+  'smart-search': {
+    icon: Search,
+    label: 'Search',
+    color: 'text-orange-400',
+    activeColor: 'bg-orange-500/15 border-orange-500 text-orange-400',
+  },
+};
+
 export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxProps>((props, ref) => {
-  const { onSend = () => {}, isLoading = false, placeholder = "Type your message here...", className } = props;
+  const { onSend = () => {}, isLoading = false, placeholder = "Type your message here...", className, activeSection = 'knowledge' } = props;
   const [input, setInput] = React.useState("");
   const [files, setFiles] = React.useState<File[]>([]);
   const [filePreviews, setFilePreviews] = React.useState<{ [key: string]: string }>({});
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [isRecording, setIsRecording] = React.useState(false);
-  const [showSearch, setShowSearch] = React.useState(false);
   const [showThink, setShowThink] = React.useState(false);
   const [showCanvas, setShowCanvas] = React.useState(false);
   const uploadInputRef = React.useRef<HTMLInputElement>(null);
@@ -563,7 +588,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
         isLoading={isLoading}
         onSubmit={handleSubmit}
         className={cn(
-          "w-full bg-[#1F2023] border-[#444444] shadow-[0_8px_30px_rgba(0,0,0,0.24)] transition-all duration-300 ease-in-out",
+          "w-full bg-gray-900/90 border-gray-600 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 ease-in-out backdrop-blur-sm",
           isRecording && "border-red-500/70",
           className
         )}
@@ -579,7 +604,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
               <div key={index} className="relative group">
                 {file.type.startsWith("image/") && filePreviews[file.name] && (
                   <div
-                    className="w-16 h-16 rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
+                    className="w-16 h-16 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-600"
                     onClick={() => openImageModal(filePreviews[file.name])}
                   >
                     <img
@@ -592,7 +617,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                         e.stopPropagation();
                         handleRemoveFile(index);
                       }}
-                      className="absolute top-1 right-1 rounded-full bg-black/70 p-0.5 opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 rounded-full bg-black/70 p-0.5 opacity-100 transition-opacity hover:bg-red-600/70"
                     >
                       <X className="h-3 w-3 text-white" />
                     </button>
@@ -611,15 +636,13 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
         >
           <PromptInputTextarea
             placeholder={
-              showSearch
-                ? "Search the web..."
-                : showThink
+              showThink
                 ? "Think deeply..."
                 : showCanvas
                 ? "Create on canvas..."
                 : placeholder
             }
-            className="text-base"
+            className="text-base text-gray-100 placeholder:text-gray-400"
           />
         </div>
 
@@ -638,71 +661,43 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
               isRecording ? "opacity-0 invisible h-0" : "opacity-100 visible"
             )}
           >
-            <PromptInputAction tooltip="Upload image">
-              <button
-                onClick={() => uploadInputRef.current?.click()}
-                className="flex h-8 w-8 text-[#9CA3AF] cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-600/30 hover:text-[#D1D5DB]"
-                disabled={isRecording}
-              >
-                <Paperclip className="h-5 w-5 transition-colors" />
-                <input
-                  ref={uploadInputRef}
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) processFile(e.target.files[0]);
-                    if (e.target) e.target.value = "";
-                  }}
-                  accept="image/*"
-                />
-              </button>
-            </PromptInputAction>
+            {/* Section Buttons replacing attachment */}
+            <div className="flex items-center gap-1">
+              {Object.entries(SECTION_BUTTONS).map(([key, config]) => {
+                const IconComponent = config.icon;
+                const isActive = activeSection === key;
+                
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={cn(
+                      "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
+                      isActive
+                        ? config.activeColor
+                        : "bg-transparent border-transparent text-gray-400 hover:text-gray-200 hover:bg-gray-700/50"
+                    )}
+                    disabled={isRecording}
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <CustomDivider />
 
             <div className="flex items-center">
-              <button
-                type="button"
-                onClick={() => handleToggleChange("search")}
-                className={cn(
-                  "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
-                  showSearch
-                    ? "bg-orange-500/15 border-orange-500 text-orange-400"
-                    : "bg-transparent border-transparent text-[#9CA3AF] hover:text-[#D1D5DB]"
-                )}
-              >
-                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                  <motion.div
-                    animate={{ rotate: showSearch ? 360 : 0, scale: showSearch ? 1.1 : 1 }}
-                    whileHover={{ rotate: showSearch ? 360 : 15, scale: 1.1, transition: { type: "spring", stiffness: 300, damping: 10 } }}
-                    transition={{ type: "spring", stiffness: 260, damping: 25 }}
-                  >
-                    <Globe className={cn("w-4 h-4", showSearch ? "text-orange-400" : "text-inherit")} />
-                  </motion.div>
-                </div>
-                <AnimatePresence>
-                  {showSearch && (
-                    <motion.span
-                      initial={{ width: 0, opacity: 0 }}
-                      animate={{ width: "auto", opacity: 1 }}
-                      exit={{ width: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-xs overflow-hidden whitespace-nowrap text-orange-400 flex-shrink-0"
-                    >
-                      Search
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-
-              <CustomDivider />
-
               <button
                 type="button"
                 onClick={() => handleToggleChange("think")}
                 className={cn(
                   "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
                   showThink
-                    ? "bg-orange-600/15 border-orange-600 text-orange-400"
-                    : "bg-transparent border-transparent text-[#9CA3AF] hover:text-[#D1D5DB]"
+                    ? "bg-purple-500/15 border-purple-500 text-purple-400"
+                    : "bg-transparent border-transparent text-gray-400 hover:text-gray-200"
                 )}
               >
                 <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
@@ -711,7 +706,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                     whileHover={{ rotate: showThink ? 360 : 15, scale: 1.1, transition: { type: "spring", stiffness: 300, damping: 10 } }}
                     transition={{ type: "spring", stiffness: 260, damping: 25 }}
                   >
-                    <BrainCog className={cn("w-4 h-4", showThink ? "text-orange-400" : "text-inherit")} />
+                    <BrainCog className={cn("w-4 h-4", showThink ? "text-purple-400" : "text-inherit")} />
                   </motion.div>
                 </div>
                 <AnimatePresence>
@@ -721,7 +716,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                       animate={{ width: "auto", opacity: 1 }}
                       exit={{ width: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="text-xs overflow-hidden whitespace-nowrap text-orange-400 flex-shrink-0"
+                      className="text-xs overflow-hidden whitespace-nowrap text-purple-400 flex-shrink-0"
                     >
                       Think
                     </motion.span>
@@ -737,8 +732,8 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 className={cn(
                   "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
                   showCanvas
-                    ? "bg-orange-700/15 border-orange-700 text-orange-400"
-                    : "bg-transparent border-transparent text-[#9CA3AF] hover:text-[#D1D5DB]"
+                    ? "bg-orange-500/15 border-orange-500 text-orange-400"
+                    : "bg-transparent border-transparent text-gray-400 hover:text-gray-200"
                 )}
               >
                 <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
@@ -786,8 +781,8 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 isRecording
                   ? "bg-transparent hover:bg-gray-600/30 text-red-500 hover:text-red-400"
                   : hasContent
-                  ? "bg-orange-500 hover:bg-orange-600 text-white"
-                  : "bg-transparent hover:bg-gray-600/30 text-[#9CA3AF] hover:text-[#D1D5DB]"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  : "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white"
               )}
               onClick={() => {
                 if (isRecording) setIsRecording(false);
@@ -797,13 +792,13 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
               disabled={isLoading && !hasContent}
             >
               {isLoading ? (
-                <Square className="h-4 w-4 fill-white animate-pulse" />
+                <Square className="h-4 w-4 fill-current animate-pulse" />
               ) : isRecording ? (
                 <StopCircle className="h-5 w-5 text-red-500" />
               ) : hasContent ? (
-                <ArrowUp className="h-4 w-4 text-white" />
+                <ArrowUp className="h-4 w-4" />
               ) : (
-                <Mic className="h-5 w-5 text-white transition-colors" />
+                <Mic className="h-5 w-5" />
               )}
             </Button>
           </PromptInputAction>
