@@ -47,10 +47,10 @@ const SECTION_CONFIG = {
   knowledge: {
     icon: BrainCog,
     title: 'Knowledge',
-    color: 'bg-purple-500',
-    hoverColor: 'hover:bg-purple-600',
-    borderColor: 'border-purple-500',
-    textColor: 'text-purple-400',
+    color: 'bg-orange-500',
+    hoverColor: 'hover:bg-orange-600',
+    borderColor: 'border-orange-500',
+    textColor: 'text-orange-400',
     examples: [
       "What is DeFi and how does it work?",
       "Explain Bitcoin's consensus mechanism",
@@ -61,10 +61,10 @@ const SECTION_CONFIG = {
   'smart-search': {
     icon: Search,
     title: 'Smart Search',
-    color: 'bg-orange-500',
-    hoverColor: 'hover:bg-orange-600',
-    borderColor: 'border-orange-500',
-    textColor: 'text-orange-400',
+    color: 'bg-amber-500',
+    hoverColor: 'hover:bg-amber-600',
+    borderColor: 'border-amber-500',
+    textColor: 'text-amber-400',
     examples: [
       "Search for Uniswap documentation",
       "Find information about Solana staking",
@@ -144,7 +144,7 @@ export const UnifiedChat = () => {
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-orange-400 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">
           CryptoHub AI
         </h1>
         <p className="text-gray-300 text-lg">Your intelligent crypto companion</p>
@@ -207,23 +207,43 @@ export const UnifiedChat = () => {
                   </div>
                   
                   {/* Enhanced Example Questions */}
-                  <div className="grid gap-3 max-w-2xl mx-auto">
-                    <h3 className="text-sm font-medium text-gray-400 mb-3">Try these examples:</h3>
-                    {activeSectionConfig.examples.map((example, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleExampleClick(example)}
-                        className={`text-left p-4 rounded-xl border ${activeSectionConfig.borderColor}/20 
-                          bg-gray-800/50 hover:bg-gray-700/50 ${activeSectionConfig.textColor} 
-                          hover:${activeSectionConfig.borderColor}/40 transition-all duration-200 
-                          hover:scale-[1.02] group`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${activeSectionConfig.color} opacity-60 group-hover:opacity-100`} />
-                          <span className="text-gray-200 group-hover:text-white">{example}</span>
-                        </div>
-                      </button>
-                    ))}
+                  <div className="grid gap-4 max-w-3xl mx-auto">
+                    <h3 className="text-lg font-semibold text-gray-300 mb-4 flex items-center justify-center gap-2">
+                      <span className="text-2xl">💡</span>
+                      Try these example questions:
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {activeSectionConfig.examples.map((example, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleExampleClick(example)}
+                          className={`group relative text-left p-5 rounded-2xl border-2 transition-all duration-300 
+                            bg-gradient-to-br from-gray-800/80 to-gray-900/80 
+                            hover:from-gray-700/80 hover:to-gray-800/80
+                            ${activeSectionConfig.borderColor}/30 hover:${activeSectionConfig.borderColor}/60
+                            hover:scale-[1.02] hover:shadow-xl
+                            backdrop-blur-sm`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl ${activeSectionConfig.color}/20 
+                              border ${activeSectionConfig.borderColor}/40 flex items-center justify-center
+                              group-hover:${activeSectionConfig.color}/30 group-hover:scale-110 transition-all duration-300`}>
+                              <activeSectionConfig.icon className={`w-5 h-5 ${activeSectionConfig.textColor} group-hover:scale-110 transition-transform`} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors">
+                                {example}
+                              </p>
+                              <div className={`mt-2 text-xs ${activeSectionConfig.textColor} opacity-70 group-hover:opacity-100 transition-opacity`}>
+                                Click to try →
+                              </div>
+                            </div>
+                          </div>
+                          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${activeSectionConfig.color}/5 
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -265,8 +285,8 @@ export const UnifiedChat = () => {
                     <div className="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       </div>
                     </div>
                   </div>

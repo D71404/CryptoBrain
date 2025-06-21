@@ -458,14 +458,14 @@ const SECTION_BUTTONS = {
   knowledge: {
     icon: BrainCog,
     label: 'Knowledge',
-    color: 'text-purple-400',
-    activeColor: 'bg-purple-500/15 border-purple-500 text-purple-400',
+    color: 'text-orange-400',
+    activeColor: 'bg-orange-500/15 border-orange-500 text-orange-400',
   },
   'smart-search': {
     icon: Search,
     label: 'Search',
-    color: 'text-orange-400',
-    activeColor: 'bg-orange-500/15 border-orange-500 text-orange-400',
+    color: 'text-amber-400',
+    activeColor: 'bg-amber-500/15 border-amber-500 text-amber-400',
   },
 };
 
@@ -699,7 +699,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 className={cn(
                   "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
                   showThink
-                    ? "bg-purple-500/15 border-purple-500 text-purple-400"
+                    ? "bg-orange-500/15 border-orange-500 text-orange-400"
                     : "bg-transparent border-transparent text-gray-400 hover:text-gray-200"
                 )}
               >
@@ -709,7 +709,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                     whileHover={{ rotate: showThink ? 360 : 15, scale: 1.1, transition: { type: "spring", stiffness: 300, damping: 10 } }}
                     transition={{ type: "spring", stiffness: 260, damping: 25 }}
                   >
-                    <BrainCog className={cn("w-4 h-4", showThink ? "text-purple-400" : "text-inherit")} />
+                    <BrainCog className={cn("w-4 h-4", showThink ? "text-orange-400" : "text-inherit")} />
                   </motion.div>
                 </div>
                 <AnimatePresence>
@@ -719,7 +719,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                       animate={{ width: "auto", opacity: 1 }}
                       exit={{ width: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="text-xs overflow-hidden whitespace-nowrap text-purple-400 flex-shrink-0"
+                      className="text-xs overflow-hidden whitespace-nowrap text-orange-400 flex-shrink-0"
                     >
                       Think
                     </motion.span>
@@ -735,7 +735,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 className={cn(
                   "rounded-full transition-all flex items-center gap-1 px-2 py-1 border h-8",
                   showCanvas
-                    ? "bg-orange-500/15 border-orange-500 text-orange-400"
+                    ? "bg-amber-500/15 border-amber-500 text-amber-400"
                     : "bg-transparent border-transparent text-gray-400 hover:text-gray-200"
                 )}
               >
@@ -745,7 +745,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                     whileHover={{ rotate: showCanvas ? 360 : 15, scale: 1.1, transition: { type: "spring", stiffness: 300, damping: 10 } }}
                     transition={{ type: "spring", stiffness: 260, damping: 25 }}
                   >
-                    <FolderCode className={cn("w-4 h-4", showCanvas ? "text-orange-400" : "text-inherit")} />
+                    <FolderCode className={cn("w-4 h-4", showCanvas ? "text-amber-400" : "text-inherit")} />
                   </motion.div>
                 </div>
                 <AnimatePresence>
@@ -755,7 +755,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                       animate={{ width: "auto", opacity: 1 }}
                       exit={{ width: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="text-xs overflow-hidden whitespace-nowrap text-orange-400 flex-shrink-0"
+                      className="text-xs overflow-hidden whitespace-nowrap text-amber-400 flex-shrink-0"
                     >
                       Canvas
                     </motion.span>
@@ -784,7 +784,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 isRecording
                   ? "bg-transparent hover:bg-gray-600/30 text-red-500 hover:text-red-400"
                   : hasContent
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  ? "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
                   : "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white"
               )}
               onClick={() => {
