@@ -1,4 +1,3 @@
-
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -403,6 +402,7 @@ interface PromptInputActionProps extends React.ComponentProps<typeof Tooltip> {
   tooltip: React.ReactNode;
   children: React.ReactNode;
   side?: "top" | "bottom" | "left" | "right";
+  className?: string;
 }
 const PromptInputAction: React.FC<PromptInputActionProps> = ({
   tooltip,
