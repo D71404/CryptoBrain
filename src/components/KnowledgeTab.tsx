@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GeminiService } from '@/services/GeminiService';
 import { useToast } from "@/hooks/use-toast";
 import { Send, User, Bot } from 'lucide-react';
 
@@ -31,7 +32,14 @@ export const KnowledgeTab = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSaveApiKey = () => {
+  useEffect(() => {
+    const savedKey = GeminiService.getApiKey();
+    if (savedKey) {
+      setHasApiKey(true);
+    }
+  }, []);
+
+  const handleSaveApiKey = async () => {
     if (!apiKey.trim()) {
       toast({
         title: "Error",
@@ -41,13 +49,22 @@ export const KnowledgeTab = () => {
       return;
     }
 
-    localStorage.setItem('gemini_api_key', apiKey);
-    setHasApiKey(true);
-    setApiKey('');
-    toast({
-      title: "Success",
-      description: "Gemini API key saved successfully",
-    });
+    const isValid = await GeminiService.testApiKey(apiKey);
+    if (isValid) {
+      GeminiService.saveApiKey(apiKey);
+      setHasApiKey(true);
+      setApiKey('');
+      toast({
+        title: "Success",
+        description: "Gemini API key saved successfully",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Invalid API key. Please check and try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSendMessage = async () => {
@@ -60,7 +77,6 @@ export const KnowledgeTab = () => {
       return;
     }
 
-    // Add user message
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       content: currentQuestion,
@@ -69,21 +85,28 @@ export const KnowledgeTab = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const questionToAsk = currentQuestion;
     setCurrentQuestion('');
     setLoading(true);
 
     try {
-      // Simulate API call - replace with actual Gemini API integration
-      setTimeout(() => {
+      const result = await GeminiService.askQuestion(questionToAsk);
+      
+      if (result.success && result.data) {
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          content: "This is a placeholder response about cryptocurrency. Once you integrate the Gemini API, this will return AI-powered answers about crypto topics, DeFi, blockchain technology, and trading strategies.",
+          content: result.data,
           isUser: false,
           timestamp: new Date(),
         };
         setMessages(prev => [...prev, botMessage]);
-        setLoading(false);
-      }, 2000);
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to get answer",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error asking question:', error);
       toast({
@@ -91,6 +114,7 @@ export const KnowledgeTab = () => {
         description: "Failed to get answer",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
     }
   };

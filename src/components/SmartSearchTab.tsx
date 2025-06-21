@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { SerpApiService } from '@/services/SerpApiService';
 import { useToast } from "@/hooks/use-toast";
 
 interface SearchResult {
@@ -22,13 +22,13 @@ export const SmartSearchTab = () => {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    const savedKey = localStorage.getItem('serpapi_key');
+    const savedKey = SerpApiService.getApiKey();
     if (savedKey) {
       setHasApiKey(true);
     }
   }, []);
 
-  const handleSaveApiKey = () => {
+  const handleSaveApiKey = async () => {
     if (!apiKey.trim()) {
       toast({
         title: "Error",
@@ -38,13 +38,22 @@ export const SmartSearchTab = () => {
       return;
     }
 
-    localStorage.setItem('serpapi_key', apiKey);
-    setHasApiKey(true);
-    setApiKey('');
-    toast({
-      title: "Success",
-      description: "SerpAPI key saved successfully",
-    });
+    const isValid = await SerpApiService.testApiKey(apiKey);
+    if (isValid) {
+      SerpApiService.saveApiKey(apiKey);
+      setHasApiKey(true);
+      setApiKey('');
+      toast({
+        title: "Success",
+        description: "SerpAPI key saved successfully",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Invalid API key. Please check and try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearch = async () => {
@@ -59,32 +68,20 @@ export const SmartSearchTab = () => {
 
     setLoading(true);
     try {
-      // Placeholder for SerpAPI integration
-      // This would be replaced with actual SerpAPI call
-      setTimeout(() => {
-        const mockResults: SearchResult[] = [
-          {
-            title: "Latest Bitcoin Price Analysis and Market Trends",
-            snippet: "Comprehensive analysis of Bitcoin's recent price movements and what it means for the crypto market...",
-            link: "https://example.com/bitcoin-analysis",
-            source: "CryptoNews"
-          },
-          {
-            title: "Ethereum 2.0 Staking Guide and Updates",
-            snippet: "Everything you need to know about Ethereum staking rewards, risks, and latest developments...",
-            link: "https://example.com/eth-staking",
-            source: "DeFi Pulse"
-          },
-          {
-            title: "Top DeFi Protocols by TVL in 2024",
-            snippet: "Ranking of the most popular DeFi protocols by Total Value Locked and user adoption...",
-            link: "https://example.com/defi-rankings",
-            source: "DeFiLlama"
-          }
-        ];
-        setResults(mockResults);
-        setLoading(false);
-      }, 2000);
+      const result = await SerpApiService.search(query);
+      if (result.success && result.data) {
+        setResults(result.data);
+        toast({
+          title: "Success",
+          description: `Found ${result.data.length} search results`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to perform search",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error searching:', error);
       toast({
@@ -92,6 +89,7 @@ export const SmartSearchTab = () => {
         description: "Failed to perform search",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
     }
   };

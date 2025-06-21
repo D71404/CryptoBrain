@@ -1,3 +1,4 @@
+
 interface SearchResult {
   title: string;
   description: string;
@@ -5,9 +6,17 @@ interface SearchResult {
   publishedAt?: string;
 }
 
+interface StatsResult {
+  coinName: string;
+  price: string;
+  marketCap: string;
+  change24h: string;
+  rank: string;
+  url: string;
+}
+
 export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
-  private static DEFAULT_API_KEY = 'fc-9fec8849f6c2480eb5945a8ede81292c';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -15,13 +24,7 @@ export class FirecrawlService {
   }
 
   static getApiKey(): string | null {
-    const savedKey = localStorage.getItem(this.API_KEY_STORAGE_KEY);
-    if (savedKey) {
-      return savedKey;
-    }
-    // Auto-set the default API key if none is saved
-    this.saveApiKey(this.DEFAULT_API_KEY);
-    return this.DEFAULT_API_KEY;
+    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
   }
 
   static async testApiKey(apiKey: string): Promise<boolean> {
@@ -46,14 +49,16 @@ export class FirecrawlService {
     }
   }
 
-  static async searchNews(query: string): Promise<{ success: boolean; error?: string; data?: SearchResult[] }> {
+  static async searchNews(query: string = 'cryptocurrency bitcoin ethereum latest news'): Promise<{ success: boolean; error?: string; data?: SearchResult[] }> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
       return { success: false, error: 'API key not found' };
     }
 
     try {
-      console.log('Making search request to Firecrawl API');
+      console.log('Making news search request to Firecrawl API');
+      const searchQuery = `${query} site:coindesk.com OR site:cointelegraph.com OR site:decrypt.co OR site:coinbase.com OR site:binance.com`;
+      
       const response = await fetch('https://api.firecrawl.dev/v1/search', {
         method: 'POST',
         headers: {
@@ -61,8 +66,8 @@ export class FirecrawlService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: query,
-          limit: 20
+          query: searchQuery,
+          limit: 15
         }),
       });
 
@@ -76,9 +81,8 @@ export class FirecrawlService {
       }
 
       const data = await response.json();
-      console.log('Firecrawl search successful:', data);
+      console.log('Firecrawl news search successful:', data);
 
-      // Transform the response to match our SearchResult interface
       const results: SearchResult[] = data.data?.map((item: any) => ({
         title: item.title || item.metadata?.title || 'No title',
         description: item.description || item.metadata?.description || item.content?.substring(0, 200) || 'No description available',
@@ -91,7 +95,62 @@ export class FirecrawlService {
         data: results 
       };
     } catch (error) {
-      console.error('Error during Firecrawl search:', error);
+      console.error('Error during Firecrawl news search:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to connect to Firecrawl API' 
+      };
+    }
+  }
+
+  static async searchStats(query: string = 'cryptocurrency market cap price bitcoin ethereum'): Promise<{ success: boolean; error?: string; data?: StatsResult[] }> {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      return { success: false, error: 'API key not found' };
+    }
+
+    try {
+      console.log('Making stats search request to Firecrawl API');
+      const searchQuery = `${query} site:coinmarketcap.com OR site:coingecko.com`;
+      
+      const response = await fetch('https://api.firecrawl.dev/v1/search', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: searchQuery,
+          limit: 10
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { 
+          success: false, 
+          error: errorData.error || `API request failed with status ${response.status}` 
+        };
+      }
+
+      const data = await response.json();
+      console.log('Firecrawl stats search successful:', data);
+
+      const results: StatsResult[] = data.data?.map((item: any) => ({
+        coinName: item.title?.split(' ')[0] || 'Unknown',
+        price: 'Check source',
+        marketCap: 'Check source', 
+        change24h: 'Check source',
+        rank: 'Check source',
+        url: item.url
+      })) || [];
+
+      return { 
+        success: true,
+        data: results 
+      };
+    } catch (error) {
+      console.error('Error during Firecrawl stats search:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to connect to Firecrawl API' 

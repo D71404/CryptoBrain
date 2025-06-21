@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,9 +62,9 @@ export const NewsTab = () => {
   const fetchNews = async () => {
     setLoading(true);
     try {
-      const result = await FirecrawlService.searchNews('cryptocurrency bitcoin ethereum latest news');
+      const result = await FirecrawlService.searchNews();
       if (result.success && result.data) {
-        setNews(result.data.slice(0, 10));
+        setNews(result.data);
         toast({
           title: "Success",
           description: `Fetched ${result.data.length} news articles`,

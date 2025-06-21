@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { User, Bot, Newspaper, BarChart3, BrainCog, Search } from 'lucide-react';
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import { FirecrawlService } from '@/services/FirecrawlService';
+import { GeminiService } from '@/services/GeminiService';
+import { SerpApiService } from '@/services/SerpApiService';
 
 interface ChatMessage {
   id: string;
@@ -111,25 +113,84 @@ export const UnifiedChat = () => {
     setLoading(true);
 
     try {
-      setTimeout(() => {
+      let response: { success: boolean; error?: string; data?: any } = { success: false };
+      
+      switch (activeSection) {
+        case 'news':
+          response = await FirecrawlService.searchNews(message);
+          break;
+        case 'stats':
+          response = await FirecrawlService.searchStats(message);
+          break;
+        case 'knowledge':
+          response = await GeminiService.askQuestion(message);
+          break;
+        case 'smart-search':
+          response = await SerpApiService.search(message);
+          break;
+      }
+
+      if (response.success) {
+        let botContent = '';
+        
+        if (activeSection === 'knowledge') {
+          botContent = response.data || 'No response generated';
+        } else if (activeSection === 'news') {
+          const articles = response.data?.slice(0, 5) || [];
+          botContent = articles.length > 0 
+            ? `Found ${articles.length} recent crypto news articles:\n\n${articles.map((article: any, i: number) => 
+                `${i + 1}. ${article.title}\n${article.description}\nSource: ${article.url}\n`
+              ).join('\n')}`
+            : 'No news articles found for your query.';
+        } else if (activeSection === 'stats') {
+          const stats = response.data || [];
+          botContent = stats.length > 0
+            ? `Found crypto market data:\n\n${stats.map((stat: any, i: number) => 
+                `${i + 1}. ${stat.coinName}\nSource: ${stat.url}\n`
+              ).join('\n')}`
+            : 'No crypto stats found for your query.';
+        } else if (activeSection === 'smart-search') {
+          const results = response.data?.slice(0, 5) || [];
+          botContent = results.length > 0
+            ? `Found ${results.length} crypto-related search results:\n\n${results.map((result: any, i: number) => 
+                `${i + 1}. ${result.title}\n${result.snippet}\nSource: ${result.link}\n`
+              ).join('\n')}`
+            : 'No search results found for your query.';
+        }
+
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          content: botContent,
+          isUser: false,
+          timestamp: new Date(),
+          section: activeSection,
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        // Check if API key is missing
         const sectionConfig = SECTION_CONFIG[activeSection];
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          content: `This is a ${sectionConfig.title} response. Once the APIs are integrated, this will provide real ${sectionConfig.title.toLowerCase()} information about your query: "${userMessage.content}"`,
+          content: `${sectionConfig.title} service is not configured. Please set up your API key in the ${sectionConfig.title} tab to use this feature.`,
           isUser: false,
           timestamp: new Date(),
           section: activeSection,
         };
         setMessages(prev => [...prev, botMessage]);
-        setLoading(false);
-      }, 2000);
+      }
     } catch (error) {
-      console.error('Error asking question:', error);
-      toast({
-        title: "Error",
-        description: "Failed to get answer",
-        variant: "destructive",
-      });
+      console.error('Error processing message:', error);
+      const sectionConfig = SECTION_CONFIG[activeSection];
+      const botMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: `Error occurred while processing your ${sectionConfig.title.toLowerCase()} request. Please try again.`,
+        isUser: false,
+        timestamp: new Date(),
+        section: activeSection,
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } finally {
       setLoading(false);
     }
   };
