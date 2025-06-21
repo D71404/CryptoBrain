@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Send, User, Bot, Newspaper, BarChart3, Brain, Search } from 'lucide-react';
+import { User, Bot, Newspaper, BarChart3, BrainCog, Search } from 'lucide-react';
+import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 
 interface ChatMessage {
   id: string;
@@ -39,7 +39,7 @@ const SECTION_CONFIG = {
     ]
   },
   knowledge: {
-    icon: Brain,
+    icon: BrainCog,
     title: 'Knowledge',
     color: 'bg-yellow-600',
     examples: [
@@ -64,7 +64,6 @@ const SECTION_CONFIG = {
 
 export const UnifiedChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<keyof typeof SECTION_CONFIG>('knowledge');
   const { toast } = useToast();
@@ -78,8 +77,8 @@ export const UnifiedChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!currentQuestion.trim()) {
+  const handleSendMessage = async (message: string, files?: File[]) => {
+    if (!message.trim()) {
       toast({
         title: "Error",
         description: "Please enter a question",
@@ -90,14 +89,13 @@ export const UnifiedChat = () => {
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: currentQuestion,
+      content: message,
       isUser: true,
       timestamp: new Date(),
       section: activeSection,
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setCurrentQuestion('');
     setLoading(true);
 
     try {
@@ -124,15 +122,8 @@ export const UnifiedChat = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
   const handleExampleClick = (example: string) => {
-    setCurrentQuestion(example);
+    handleSendMessage(example);
   };
 
   const activeSectionConfig = SECTION_CONFIG[activeSection];
@@ -257,28 +248,14 @@ export const UnifiedChat = () => {
         </CardContent>
       </Card>
 
-      {/* Chat Input */}
-      <Card className="crypto-card">
-        <CardContent className="pt-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder={`Ask anything about ${activeSectionConfig.title.toLowerCase()}...`}
-              value={currentQuestion}
-              onChange={(e) => setCurrentQuestion(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="bg-black/20 border-orange-500/20 text-white flex-1 placeholder:text-orange-300/50"
-              disabled={loading}
-            />
-            <Button 
-              onClick={handleSendMessage} 
-              disabled={loading || !currentQuestion.trim()}
-              className="crypto-gradient px-4"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* New Prompt Input Box */}
+      <div className="w-full">
+        <PromptInputBox
+          onSend={handleSendMessage}
+          isLoading={loading}
+          placeholder={`Ask anything about ${activeSectionConfig.title.toLowerCase()}...`}
+        />
+      </div>
     </div>
   );
 };
