@@ -1,4 +1,3 @@
-
 interface SerpSearchResult {
   title: string;
   snippet: string;
@@ -8,6 +7,7 @@ interface SerpSearchResult {
 
 export class SerpApiService {
   private static API_KEY_STORAGE_KEY = 'serpapi_key';
+  private static DEFAULT_API_KEY = '83de885ec0246b4006de288440f59949442c750c31a2faede0ffd5d975e188d9';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -15,7 +15,12 @@ export class SerpApiService {
   }
 
   static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    const savedKey = localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    if (savedKey) return savedKey;
+    
+    // Auto-save the default key if none exists
+    this.saveApiKey(this.DEFAULT_API_KEY);
+    return this.DEFAULT_API_KEY;
   }
 
   static async testApiKey(apiKey: string): Promise<boolean> {

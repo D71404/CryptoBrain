@@ -1,6 +1,6 @@
-
 export class GeminiService {
   private static API_KEY_STORAGE_KEY = 'gemini_api_key';
+  private static DEFAULT_API_KEY = 'AIzaSyA-A6oANcwEorcwAmNLhCvR9DdTYjd-wEU';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -8,7 +8,12 @@ export class GeminiService {
   }
 
   static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    const savedKey = localStorage.getItem(this.API_KEY_STORAGE_KEY);
+    if (savedKey) return savedKey;
+    
+    // Auto-save the default key if none exists
+    this.saveApiKey(this.DEFAULT_API_KEY);
+    return this.DEFAULT_API_KEY;
   }
 
   static async testApiKey(apiKey: string): Promise<boolean> {
