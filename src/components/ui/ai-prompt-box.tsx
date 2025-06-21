@@ -476,6 +476,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
   const [filePreviews, setFilePreviews] = React.useState<{ [key: string]: string }>({});
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [isRecording, setIsRecording] = React.useState(false);
+  const [showSearch, setShowSearch] = React.useState(false);
   const [showThink, setShowThink] = React.useState(false);
   const [showCanvas, setShowCanvas] = React.useState(false);
   const uploadInputRef = React.useRef<HTMLInputElement>(null);
@@ -636,7 +637,9 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
         >
           <PromptInputTextarea
             placeholder={
-              showThink
+              showSearch
+                ? "Search the web..."
+                : showThink
                 ? "Think deeply..."
                 : showCanvas
                 ? "Create on canvas..."
