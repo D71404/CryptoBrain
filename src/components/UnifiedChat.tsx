@@ -203,26 +203,26 @@ export const UnifiedChat = () => {
   const activeSectionConfig = SECTION_CONFIG[activeSection];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] space-y-4 max-w-6xl mx-auto px-4">
-      {/* Header */}
-      <div className="text-center space-y-2 py-4">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">
+    <div className="flex flex-col h-[calc(100vh-60px)] space-y-3 max-w-7xl mx-auto px-4">
+      {/* Smaller Header */}
+      <div className="text-center space-y-1 py-2">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">
           CryptoHub AI
         </h1>
-        <p className="text-gray-300 text-base">Your intelligent crypto companion</p>
+        <p className="text-gray-300 text-sm">Your intelligent crypto companion</p>
       </div>
       
-      {/* Chat Messages Area */}
-      <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 mx-auto w-full max-w-4xl">
-        <CardHeader className="pb-4 border-b border-gray-700">
+      {/* Larger Chat Messages Area */}
+      <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 mx-auto w-full">
+        <CardHeader className="pb-3 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <activeSectionConfig.icon className={`w-6 h-6 ${activeSectionConfig.textColor}`} />
+              <activeSectionConfig.icon className={`w-5 h-5 ${activeSectionConfig.textColor}`} />
               <div>
-                <CardTitle className="text-white text-xl">
+                <CardTitle className="text-white text-lg">
                   {activeSectionConfig.title} Assistant
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-gray-400 text-sm">
                   AI-powered {activeSectionConfig.title.toLowerCase()} insights
                 </CardDescription>
               </div>
@@ -253,25 +253,25 @@ export const UnifiedChat = () => {
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col p-6">
+        <CardContent className="flex-1 flex flex-col p-4">
           <ScrollArea className="flex-1 pr-4">
             <div className="space-y-6">
               {messages.length === 0 && (
-                <div className="text-center py-8">
-                  <div className="mb-4">
-                    <activeSectionConfig.icon className={`mx-auto mb-3 h-10 w-10 ${activeSectionConfig.textColor}`} />
-                    <p className="text-gray-300 text-base mb-2">
+                <div className="text-center py-4">
+                  <div className="mb-3">
+                    <activeSectionConfig.icon className={`mx-auto mb-2 h-8 w-8 ${activeSectionConfig.textColor}`} />
+                    <p className="text-gray-300 text-sm mb-1">
                       Welcome to {activeSectionConfig.title} Assistant
                     </p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-xs">
                       Ask questions about {activeSectionConfig.title.toLowerCase()} to get started
                     </p>
                   </div>
                   
-                  {/* Enhanced Example Questions */}
-                  <div className="grid gap-3 max-w-2xl mx-auto">
-                    <h3 className="text-base font-semibold text-gray-300 mb-3 flex items-center justify-center gap-2">
-                      <span className="text-xl">💡</span>
+                  {/* Compact Example Questions */}
+                  <div className="grid gap-2 max-w-3xl mx-auto">
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2 flex items-center justify-center gap-2">
+                      <span className="text-lg">💡</span>
                       Try these example questions:
                     </h3>
                     <div className="grid md:grid-cols-2 gap-2">
@@ -279,21 +279,21 @@ export const UnifiedChat = () => {
                         <button
                           key={index}
                           onClick={() => handleExampleClick(example)}
-                          className={`group relative text-left p-4 rounded-xl border-2 transition-all duration-300 
+                          className={`group relative text-left p-3 rounded-lg border-2 transition-all duration-300 
                             bg-gradient-to-br from-gray-800/80 to-gray-900/80 
                             hover:from-gray-700/80 hover:to-gray-800/80
                             ${activeSectionConfig.borderColor}/30 hover:${activeSectionConfig.borderColor}/60
                             hover:scale-[1.02] hover:shadow-lg
                             backdrop-blur-sm`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`flex-shrink-0 w-8 h-8 rounded-lg ${activeSectionConfig.color}/20 
+                          <div className="flex items-start gap-2">
+                            <div className={`flex-shrink-0 w-6 h-6 rounded-lg ${activeSectionConfig.color}/20 
                               border ${activeSectionConfig.borderColor}/40 flex items-center justify-center
                               group-hover:${activeSectionConfig.color}/30 group-hover:scale-110 transition-all duration-300`}>
-                              <activeSectionConfig.icon className={`w-4 h-4 ${activeSectionConfig.textColor} group-hover:scale-110 transition-transform`} />
+                              <activeSectionConfig.icon className={`w-3 h-3 ${activeSectionConfig.textColor} group-hover:scale-110 transition-transform`} />
                             </div>
                             <div className="flex-1">
-                              <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors text-sm">
+                              <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors text-xs">
                                 {example}
                               </p>
                               <div className={`mt-1 text-xs ${activeSectionConfig.textColor} opacity-70 group-hover:opacity-100 transition-opacity`}>
@@ -301,7 +301,7 @@ export const UnifiedChat = () => {
                               </div>
                             </div>
                           </div>
-                          <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${activeSectionConfig.color}/5 
+                          <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${activeSectionConfig.color}/5 
                             opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
                         </button>
                       ))}
@@ -362,7 +362,7 @@ export const UnifiedChat = () => {
       </Card>
 
       {/* Enhanced Prompt Input Box */}
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full mx-auto">
         <PromptInputBox
           onSend={handleSendMessage}
           isLoading={loading}
