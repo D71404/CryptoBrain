@@ -158,8 +158,14 @@ export const UnifiedChat = () => {
       let botContent = '';
       
       if (webhookResponse.success) {
-        // Use the webhook response as the bot's reply
-        botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
+        // Parse the webhook response and extract only the "output" field
+        try {
+          const parsedResponse = JSON.parse(webhookResponse.data);
+          botContent = parsedResponse.output || 'Webhook responded successfully but with no output content.';
+        } catch (parseError) {
+          // If parsing fails, treat the response as plain text
+          botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
+        }
       } else {
         // If webhook fails, fall back to the original service logic
         let response: { success: boolean; error?: string; data?: any } = { success: false };
