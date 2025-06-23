@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,6 +91,35 @@ export const UnifiedChat = () => {
     scrollToBottom();
   }, [messages]);
 
+  const sendToWebhook = async (messageData: any) => {
+    try {
+      const response = await fetch('https://shanzacass.app.n8n.cloud/webhook-test/8a8dcc89-9452-4e89-a5c6-9e10e73dab43', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: messageData.message,
+          section: messageData.section,
+          timestamp: messageData.timestamp,
+          files: messageData.files?.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+          })) || []
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Message sent to webhook successfully');
+      } else {
+        console.error('Failed to send message to webhook:', response.status);
+      }
+    } catch (error) {
+      console.error('Error sending message to webhook:', error);
+    }
+  };
+
   const handleSendMessage = async (message: string, files?: File[]) => {
     if (!message.trim()) {
       toast({
@@ -112,6 +140,14 @@ export const UnifiedChat = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setLoading(true);
+
+    // Send to webhook
+    await sendToWebhook({
+      message: message,
+      section: activeSection,
+      timestamp: new Date().toISOString(),
+      files: files || []
+    });
 
     try {
       let response: { success: boolean; error?: string; data?: any } = { success: false };
@@ -169,7 +205,6 @@ export const UnifiedChat = () => {
         
         setMessages(prev => [...prev, botMessage]);
       } else {
-        // Check if API key is missing
         const sectionConfig = SECTION_CONFIG[activeSection];
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
