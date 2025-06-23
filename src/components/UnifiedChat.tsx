@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -112,11 +113,15 @@ export const UnifiedChat = () => {
 
       if (response.ok) {
         console.log('Message sent to webhook successfully');
+        const responseData = await response.text();
+        return { success: true, data: responseData };
       } else {
         console.error('Failed to send message to webhook:', response.status);
+        return { success: false, error: `Webhook returned status ${response.status}` };
       }
     } catch (error) {
       console.error('Error sending message to webhook:', error);
+      return { success: false, error: 'Failed to connect to webhook' };
     }
   };
 
@@ -141,86 +146,84 @@ export const UnifiedChat = () => {
     setMessages(prev => [...prev, userMessage]);
     setLoading(true);
 
-    // Send to webhook
-    await sendToWebhook({
-      message: message,
-      section: activeSection,
-      timestamp: new Date().toISOString(),
-      files: files || []
-    });
-
     try {
-      let response: { success: boolean; error?: string; data?: any } = { success: false };
-      
-      switch (activeSection) {
-        case 'news':
-          response = await FirecrawlService.searchNews(message);
-          break;
-        case 'stats':
-          response = await FirecrawlService.searchStats(message);
-          break;
-        case 'knowledge':
-          response = await GeminiService.askQuestion(message);
-          break;
-        case 'smart-search':
-          response = await SerpApiService.search(message);
-          break;
-      }
+      // Send to webhook and wait for response
+      const webhookResponse = await sendToWebhook({
+        message: message,
+        section: activeSection,
+        timestamp: new Date().toISOString(),
+        files: files || []
+      });
 
-      if (response.success) {
-        let botContent = '';
+      let botContent = '';
+      
+      if (webhookResponse.success) {
+        // Use the webhook response as the bot's reply
+        botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
+      } else {
+        // If webhook fails, fall back to the original service logic
+        let response: { success: boolean; error?: string; data?: any } = { success: false };
         
-        if (activeSection === 'knowledge') {
-          botContent = response.data || 'No response generated';
-        } else if (activeSection === 'news') {
-          const articles = response.data?.slice(0, 5) || [];
-          botContent = articles.length > 0 
-            ? `Found ${articles.length} recent crypto news articles:\n\n${articles.map((article: any, i: number) => 
-                `${i + 1}. ${article.title}\n${article.description}\nSource: ${article.url}\n`
-              ).join('\n')}`
-            : 'No news articles found for your query.';
-        } else if (activeSection === 'stats') {
-          const stats = response.data || [];
-          botContent = stats.length > 0
-            ? `Found crypto market data:\n\n${stats.map((stat: any, i: number) => 
-                `${i + 1}. ${stat.coinName}\nSource: ${stat.url}\n`
-              ).join('\n')}`
-            : 'No crypto stats found for your query.';
-        } else if (activeSection === 'smart-search') {
-          const results = response.data?.slice(0, 5) || [];
-          botContent = results.length > 0
-            ? `Found ${results.length} crypto-related search results:\n\n${results.map((result: any, i: number) => 
-                `${i + 1}. ${result.title}\n${result.snippet}\nSource: ${result.link}\n`
-              ).join('\n')}`
-            : 'No search results found for your query.';
+        switch (activeSection) {
+          case 'news':
+            response = await FirecrawlService.searchNews(message);
+            break;
+          case 'stats':
+            response = await FirecrawlService.searchStats(message);
+            break;
+          case 'knowledge':
+            response = await GeminiService.askQuestion(message);
+            break;
+          case 'smart-search':
+            response = await SerpApiService.search(message);
+            break;
         }
 
-        const botMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          content: botContent,
-          isUser: false,
-          timestamp: new Date(),
-          section: activeSection,
-        };
-        
-        setMessages(prev => [...prev, botMessage]);
-      } else {
-        const sectionConfig = SECTION_CONFIG[activeSection];
-        const botMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          content: `${sectionConfig.title} service is not configured. Please set up your API key in the ${sectionConfig.title} tab to use this feature.`,
-          isUser: false,
-          timestamp: new Date(),
-          section: activeSection,
-        };
-        setMessages(prev => [...prev, botMessage]);
+        if (response.success) {
+          if (activeSection === 'knowledge') {
+            botContent = response.data || 'No response generated';
+          } else if (activeSection === 'news') {
+            const articles = response.data?.slice(0, 5) || [];
+            botContent = articles.length > 0 
+              ? `Found ${articles.length} recent crypto news articles:\n\n${articles.map((article: any, i: number) => 
+                  `${i + 1}. ${article.title}\n${article.description}\nSource: ${article.url}\n`
+                ).join('\n')}`
+              : 'No news articles found for your query.';
+          } else if (activeSection === 'stats') {
+            const stats = response.data || [];
+            botContent = stats.length > 0
+              ? `Found crypto market data:\n\n${stats.map((stat: any, i: number) => 
+                  `${i + 1}. ${stat.coinName}\nSource: ${stat.url}\n`
+                ).join('\n')}`
+              : 'No crypto stats found for your query.';
+          } else if (activeSection === 'smart-search') {
+            const results = response.data?.slice(0, 5) || [];
+            botContent = results.length > 0
+              ? `Found ${results.length} crypto-related search results:\n\n${results.map((result: any, i: number) => 
+                  `${i + 1}. ${result.title}\n${result.snippet}\nSource: ${result.link}\n`
+                ).join('\n')}`
+              : 'No search results found for your query.';
+          }
+        } else {
+          const sectionConfig = SECTION_CONFIG[activeSection];
+          botContent = `Webhook failed (${webhookResponse.error}). ${sectionConfig.title} service is also not configured. Please set up your API key in the ${sectionConfig.title} tab to use this feature.`;
+        }
       }
-    } catch (error) {
-      console.error('Error processing message:', error);
-      const sectionConfig = SECTION_CONFIG[activeSection];
+
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: `Error occurred while processing your ${sectionConfig.title.toLowerCase()} request. Please try again.`,
+        content: botContent,
+        isUser: false,
+        timestamp: new Date(),
+        section: activeSection,
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error processing message:', error);
+      const botMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: `Error occurred while processing your request. Please try again.`,
         isUser: false,
         timestamp: new Date(),
         section: activeSection,
