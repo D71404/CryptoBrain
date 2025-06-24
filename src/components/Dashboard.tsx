@@ -17,7 +17,7 @@ export const Dashboard = () => {
       containerClassName="min-h-screen"
       className="relative z-10"
     >
-      <div className="relative z-20 min-h-screen p-6">
+      <div className="relative z-20 min-h-screen flex items-center justify-center p-6">
         <UnifiedChat />
       </div>
     </BackgroundGradientAnimation>
