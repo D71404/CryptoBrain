@@ -6,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { User, Bot, Newspaper, BarChart3, BrainCog, Search } from 'lucide-react';
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
-import { StarBorder } from "@/components/ui/star-border";
 import { FirecrawlService } from '@/services/FirecrawlService';
 import { GeminiService } from '@/services/GeminiService';
 import { SerpApiService } from '@/services/SerpApiService';
@@ -257,161 +256,154 @@ export const UnifiedChat = () => {
         <p className="text-gray-300 text-xs">Your intelligent crypto companion</p>
       </div>
       
-      {/* Chat Messages Area with StarBorder */}
-      <StarBorder 
-        as="div" 
-        className="flex-1 flex flex-col w-full"
-        color="rgb(234, 88, 12)"
-        speed="8s"
-      >
-        <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 mx-auto w-full">
-          <CardHeader className="pb-2 border-b border-gray-700">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <activeSectionConfig.icon className={`w-4 h-4 ${activeSectionConfig.textColor}`} />
-                <div>
-                  <CardTitle className="text-white text-base">
-                    {activeSectionConfig.title} Assistant
-                  </CardTitle>
-                  <CardDescription className="text-gray-400 text-xs">
-                    AI-powered {activeSectionConfig.title.toLowerCase()} insights
-                  </CardDescription>
-                </div>
-              </div>
-              
-              {/* Section Navigation Buttons */}
-              <div className="flex gap-1">
-                {Object.entries(SECTION_CONFIG).map(([key, config]) => {
-                  const IconComponent = config.icon;
-                  const isActive = activeSection === key;
-                  
-                  return (
-                    <Button
-                      key={key}
-                      variant={isActive ? "default" : "outline"}
-                      size="sm"
-                      className={`${isActive 
-                        ? `${config.color} ${config.hoverColor} text-white` 
-                        : `border-gray-600 text-gray-300 hover:bg-gray-700 hover:${config.textColor.replace('text-', 'border-')}`
-                      } transition-all duration-300`}
-                      onClick={() => setActiveSection(key as keyof typeof SECTION_CONFIG)}
-                    >
-                      <IconComponent className="w-3 h-3" />
-                    </Button>
-                  );
-                })}
+      {/* Smaller Chat Messages Area */}
+      <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 mx-auto w-full">
+        <CardHeader className="pb-2 border-b border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <activeSectionConfig.icon className={`w-4 h-4 ${activeSectionConfig.textColor}`} />
+              <div>
+                <CardTitle className="text-white text-base">
+                  {activeSectionConfig.title} Assistant
+                </CardTitle>
+                <CardDescription className="text-gray-400 text-xs">
+                  AI-powered {activeSectionConfig.title.toLowerCase()} insights
+                </CardDescription>
               </div>
             </div>
-          </CardHeader>
-          
-          <CardContent className="flex-1 flex flex-col p-3">
-            <ScrollArea className="flex-1 pr-3">
-              <div className="space-y-4">
-                {messages.length === 0 && (
-                  <div className="text-center py-2">
-                    <div className="mb-2">
-                      <activeSectionConfig.icon className={`mx-auto mb-1 h-6 w-6 ${activeSectionConfig.textColor}`} />
-                      <p className="text-gray-300 text-xs mb-1">
-                        Welcome to {activeSectionConfig.title} Assistant
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        Ask questions about {activeSectionConfig.title.toLowerCase()} to get started
-                      </p>
-                    </div>
-                    
-                    {/* Compact Example Questions */}
-                    <div className="grid gap-1 max-w-2xl mx-auto">
-                      <h3 className="text-xs font-semibold text-gray-300 mb-1 flex items-center justify-center gap-1">
-                        <span className="text-sm">💡</span>
-                        Try these example questions:
-                      </h3>
-                      <div className="grid md:grid-cols-2 gap-1">
-                        {activeSectionConfig.examples.map((example, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleExampleClick(example)}
-                            className={`group relative text-left p-2 rounded-md border transition-all duration-300 
-                              bg-gradient-to-br from-gray-800/80 to-gray-900/80 
-                              hover:from-gray-700/80 hover:to-gray-800/80
-                              ${activeSectionConfig.borderColor}/30 hover:${activeSectionConfig.borderColor}/60
-                              hover:scale-[1.01] hover:shadow-md
-                              backdrop-blur-sm`}
-                          >
-                            <div className="flex items-start gap-1">
-                              <div className={`flex-shrink-0 w-4 h-4 rounded ${activeSectionConfig.color}/20 
-                                border ${activeSectionConfig.borderColor}/40 flex items-center justify-center
-                                group-hover:${activeSectionConfig.color}/30 group-hover:scale-110 transition-all duration-300`}>
-                                <activeSectionConfig.icon className={`w-2 h-2 ${activeSectionConfig.textColor} group-hover:scale-110 transition-transform`} />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors text-xs">
-                                  {example}
-                                </p>
-                                <div className={`mt-0.5 text-xs ${activeSectionConfig.textColor} opacity-70 group-hover:opacity-100 transition-opacity`}>
-                                  Click to try →
-                                </div>
+            
+            {/* Section Navigation Buttons */}
+            <div className="flex gap-1">
+              {Object.entries(SECTION_CONFIG).map(([key, config]) => {
+                const IconComponent = config.icon;
+                const isActive = activeSection === key;
+                
+                return (
+                  <Button
+                    key={key}
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    className={`${isActive 
+                      ? `${config.color} ${config.hoverColor} text-white` 
+                      : `border-gray-600 text-gray-300 hover:bg-gray-700 hover:${config.textColor.replace('text-', 'border-')}`
+                    } transition-all duration-300`}
+                    onClick={() => setActiveSection(key as keyof typeof SECTION_CONFIG)}
+                  >
+                    <IconComponent className="w-3 h-3" />
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="flex-1 flex flex-col p-3">
+          <ScrollArea className="flex-1 pr-3">
+            <div className="space-y-4">
+              {messages.length === 0 && (
+                <div className="text-center py-2">
+                  <div className="mb-2">
+                    <activeSectionConfig.icon className={`mx-auto mb-1 h-6 w-6 ${activeSectionConfig.textColor}`} />
+                    <p className="text-gray-300 text-xs mb-1">
+                      Welcome to {activeSectionConfig.title} Assistant
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      Ask questions about {activeSectionConfig.title.toLowerCase()} to get started
+                    </p>
+                  </div>
+                  
+                  {/* Compact Example Questions */}
+                  <div className="grid gap-1 max-w-2xl mx-auto">
+                    <h3 className="text-xs font-semibold text-gray-300 mb-1 flex items-center justify-center gap-1">
+                      <span className="text-sm">💡</span>
+                      Try these example questions:
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-1">
+                      {activeSectionConfig.examples.map((example, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleExampleClick(example)}
+                          className={`group relative text-left p-2 rounded-md border transition-all duration-300 
+                            bg-gradient-to-br from-gray-800/80 to-gray-900/80 
+                            hover:from-gray-700/80 hover:to-gray-800/80
+                            ${activeSectionConfig.borderColor}/30 hover:${activeSectionConfig.borderColor}/60
+                            hover:scale-[1.01] hover:shadow-md
+                            backdrop-blur-sm`}
+                        >
+                          <div className="flex items-start gap-1">
+                            <div className={`flex-shrink-0 w-4 h-4 rounded ${activeSectionConfig.color}/20 
+                              border ${activeSectionConfig.borderColor}/40 flex items-center justify-center
+                              group-hover:${activeSectionConfig.color}/30 group-hover:scale-110 transition-all duration-300`}>
+                              <activeSectionConfig.icon className={`w-2 h-2 ${activeSectionConfig.textColor} group-hover:scale-110 transition-transform`} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors text-xs">
+                                {example}
+                              </p>
+                              <div className={`mt-0.5 text-xs ${activeSectionConfig.textColor} opacity-70 group-hover:opacity-100 transition-opacity`}>
+                                Click to try →
                               </div>
                             </div>
-                            <div className={`absolute inset-0 rounded-md bg-gradient-to-r ${activeSectionConfig.color}/5 
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
-                          </button>
-                        ))}
-                      </div>
+                          </div>
+                          <div className={`absolute inset-0 rounded-md bg-gradient-to-r ${activeSectionConfig.color}/5 
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                        </button>
+                      ))}
                     </div>
                   </div>
-                )}
-                
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`flex gap-4 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                        message.isUser ? 'bg-blue-600' : 'bg-gray-700'
-                      }`}>
-                        {message.isUser ? 
-                          <User className="w-5 h-5 text-white" /> : 
-                          <Bot className="w-5 h-5 text-white" />
-                        }
-                      </div>
-                      <div className={`rounded-2xl px-4 py-3 ${
-                        message.isUser 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-800 text-gray-100 border border-gray-700'
-                      }`}>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                        <p className="text-xs opacity-60 mt-2">
-                          {message.timestamp.toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
-                {loading && (
-                  <div className="flex gap-4 justify-start">
-                    <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                </div>
+              )}
+              
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex gap-4 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                      message.isUser ? 'bg-blue-600' : 'bg-gray-700'
+                    }`}>
+                      {message.isUser ? 
+                        <User className="w-5 h-5 text-white" /> : 
                         <Bot className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                          <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                        </div>
+                      }
+                    </div>
+                    <div className={`rounded-2xl px-4 py-3 ${
+                      message.isUser 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-800 text-gray-100 border border-gray-700'
+                    }`}>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-xs opacity-60 mt-2">
+                        {message.timestamp.toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {loading && (
+                <div className="flex gap-4 justify-start">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       </div>
                     </div>
                   </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </StarBorder>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
 
       {/* Enhanced Prompt Input Box */}
       <div className="w-full mx-auto">
