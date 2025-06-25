@@ -156,7 +156,6 @@ export const UnifiedChat = () => {
       });
 
       let botContent = '';
-      let responseSection = activeSection; // Track which section generated the response
       
       if (webhookResponse.success) {
         // Parse the webhook response and extract only the "output" field
@@ -222,15 +221,10 @@ export const UnifiedChat = () => {
         content: botContent,
         isUser: false,
         timestamp: new Date(),
-        section: responseSection,
+        section: activeSection,
       };
       
       setMessages(prev => [...prev, botMessage]);
-      
-      // Auto-switch to the section that generated the response
-      if (responseSection && responseSection !== activeSection) {
-        setActiveSection(responseSection);
-      }
     } catch (error) {
       console.error('Error processing message:', error);
       const botMessage: ChatMessage = {
@@ -253,7 +247,7 @@ export const UnifiedChat = () => {
   const activeSectionConfig = SECTION_CONFIG[activeSection];
 
   return (
-    <div className="flex flex-col h-[70vh] space-y-2 w-full">
+    <div className="flex flex-col h-[70vh] space-y-2 max-w-4xl mx-auto px-4">
       {/* Smaller Header */}
       <div className="text-center space-y-1 py-1">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">
@@ -303,9 +297,9 @@ export const UnifiedChat = () => {
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col p-1">
+        <CardContent className="flex-1 flex flex-col p-3">
           <ScrollArea className="flex-1 pr-3">
-            <div className="space-y-4 p-2">
+            <div className="space-y-4">
               {messages.length === 0 && (
                 <div className="text-center py-2">
                   <div className="mb-2">
