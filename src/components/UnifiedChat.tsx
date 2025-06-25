@@ -8,6 +8,7 @@ import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { FirecrawlService } from '@/services/FirecrawlService';
 import { GeminiService } from '@/services/GeminiService';
 import { SerpApiService } from '@/services/SerpApiService';
+
 interface ChatMessage {
   id: string;
   content: string;
@@ -212,7 +213,7 @@ export const UnifiedChat = () => {
     handleSendMessage(example);
   };
   const activeSectionConfig = SECTION_CONFIG[activeSection];
-  return <div className="flex flex-col h-[70vh] space-y-2 max-w-4xl mx-auto px-4">
+  return <div className="flex flex-col h-[70vh] space-y-2 max-w-4xl mx-auto px-4 justify-center">
       {/* Smaller Header */}
       <div className="text-center space-y-1 py-1">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-orange-200">
