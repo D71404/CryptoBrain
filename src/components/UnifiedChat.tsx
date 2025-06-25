@@ -247,7 +247,7 @@ export const UnifiedChat = () => {
   const activeSectionConfig = SECTION_CONFIG[activeSection];
 
   return (
-    <div className="flex flex-col h-[70vh] space-y-2 max-w-4xl mx-auto px-4">
+    <div className="flex flex-col h-[70vh] space-y-2 w-full">
       {/* Smaller Header */}
       <div className="text-center space-y-1 py-1">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">
@@ -297,7 +297,7 @@ export const UnifiedChat = () => {
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col p-3">
+        <CardContent className="flex-1 flex flex-col p-2">
           <ScrollArea className="flex-1 pr-3">
             <div className="space-y-4">
               {messages.length === 0 && (
