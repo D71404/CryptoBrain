@@ -257,7 +257,7 @@ export const UnifiedChat = () => {
       </div>
       
       {/* Smaller Chat Messages Area */}
-      <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 mx-auto w-full">
+      <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full">
         <CardHeader className="pb-2 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -406,7 +406,7 @@ export const UnifiedChat = () => {
       </Card>
 
       {/* Enhanced Prompt Input Box */}
-      <div className="w-full mx-auto">
+      <div className="w-full">
         <PromptInputBox
           onSend={handleSendMessage}
           isLoading={loading}
