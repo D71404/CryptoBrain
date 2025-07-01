@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -65,16 +64,13 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <span className="mb-6 inline-block rounded-full border border-orange-500/30 px-3 py-1 text-xs text-orange-400">
-            NEXT GENERATION OF CRYPTO TRADING
+            NEXT GENERATION OF CRYPTO AI
           </span>
           <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-light md:text-5xl lg:text-7xl">
-            Trade Smarter with{" "}
             <span className="text-orange-500">AI-Powered</span> Crypto Insights
           </h1>
           <p className="mx-auto mb-10 max-w-2xl text-lg text-white/60 md:text-xl">
-            CryptoBrain combines artificial intelligence with cutting-edge trading
-            strategies to help you maximize your crypto investments with
-            precision and ease.
+            CryptoBrain combines artificial intelligence with cutting-edge insights to help you keep upto date in crypto world.
           </p>
 
           <div className="mb-10 sm:mb-0 flex flex-col items-center justify-center gap-4 sm:flex-row">
