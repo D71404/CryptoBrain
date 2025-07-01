@@ -1,8 +1,14 @@
 
+import Hero from '@/components/ui/hero';
 import { Dashboard } from '@/components/Dashboard';
 
 const Index = () => {
-  return <Dashboard />;
+  return (
+    <div>
+      <Hero />
+      <Dashboard />
+    </div>
+  );
 };
 
 export default Index;

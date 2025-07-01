@@ -110,4 +110,13 @@
   .glow-effect {
     box-shadow: 0 0 20px rgba(234, 88, 12, 0.3);
   }
+
+  .neumorphic-button::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300 bg-gradient-to-br from-orange-500/20 to-transparent rounded-full;
+  }
+    
+  .neumorphic-button:hover::after {
+    @apply opacity-100;
+  }
 }
