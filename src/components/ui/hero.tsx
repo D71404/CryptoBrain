@@ -1,7 +1,18 @@
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/auth');
+  };
+
+  const handleSignIn = () => {
+    navigate('/auth');
+  };
+
   return (
     <section
       className="relative w-full overflow-hidden bg-[#0a0613] pb-10 pt-32 font-light text-white antialiased md:pb-16 md:pt-20"
@@ -24,6 +35,29 @@ export default function Hero() {
         }}
       />
 
+      {/* Navigation Bar */}
+      <nav className="absolute top-0 left-0 right-0 z-20 p-6">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="text-2xl font-light text-white">
+            Crypto<span className="text-orange-500">Brain</span>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={handleSignIn}
+              className="text-white/70 hover:text-white transition-colors px-4 py-2"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={handleGetStarted}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-all duration-300"
+            >
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </nav>
+
       <div className="container relative z-10 mx-auto max-w-2xl px-4 text-center md:max-w-4xl md:px-6 lg:max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,6 +79,7 @@ export default function Hero() {
 
           <div className="mb-10 sm:mb-0 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <button
+              onClick={handleGetStarted}
               className="neumorphic-button hover:shadow-[0_0_20px_rgba(234,88,12,0.5)] relative w-full overflow-hidden rounded-full border border-white/10 bg-gradient-to-b from-white/10 to-white/5 px-8 py-4 text-white shadow-lg transition-all duration-300 hover:border-orange-500/30 sm:w-auto"
             >
               Get Started
