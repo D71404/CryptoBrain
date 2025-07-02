@@ -201,20 +201,20 @@ export const UnifiedChat = () => {
       
       {/* Modern Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as keyof typeof TAB_CONFIG)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-800/50 border border-gray-700">
+        <TabsList className="grid w-full grid-cols-3 bg-gray-800/50 border border-gray-700 h-auto">
           {Object.entries(TAB_CONFIG).map(([key, config]) => {
             const IconComponent = config.icon;
             return (
               <TabsTrigger 
                 key={key} 
                 value={key}
-                className="flex items-center gap-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700"
+                className="flex flex-col items-center gap-1 p-3 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700 min-h-[60px] text-center"
               >
-                <IconComponent className="w-4 h-4" />
-                <div className="hidden sm:block">
-                  <div className="font-medium">{config.title}</div>
-                  <div className="text-xs opacity-70">{config.subtitle}</div>
+                <div className="flex items-center gap-2">
+                  <IconComponent className="w-4 h-4 flex-shrink-0" />
+                  <div className="font-medium text-sm">{config.title}</div>
                 </div>
+                <div className="text-xs opacity-70 leading-tight">{config.subtitle}</div>
               </TabsTrigger>
             );
           })}
