@@ -261,7 +261,7 @@ export const UnifiedChat = () => {
                   <div className="space-y-4">
                     {messages.filter(msg => msg.tab === key).length === 0 && (
                       <div className="text-center py-6">
-                        <div className="mb-4">
+                        <div>
                           <config.icon className="mx-auto mb-3 h-8 w-8 text-orange-400" />
                           <p className="text-gray-300 text-sm mb-1">
                             Welcome to {config.title}
