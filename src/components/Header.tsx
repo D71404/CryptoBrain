@@ -9,14 +9,7 @@ export const Header = () => {
   return (
     <header className="bg-gradient-to-r from-[#0a0613] to-[#271a0d] border-b border-orange-500/20 px-6 py-4">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-light text-white">
-          Crypto<span className="text-orange-500">Brain</span>
-        </div>
-        
         <div className="flex items-center gap-4">
-          <span className="text-white/70 text-sm">
-            Welcome, {user?.email}
-          </span>
           <Button
             onClick={signOut}
             variant="outline"
@@ -24,6 +17,15 @@ export const Header = () => {
           >
             Sign Out
           </Button>
+          <div className="text-2xl font-light text-white">
+            Crypto<span className="text-orange-500">Brain</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <span className="text-white/70 text-sm">
+            Welcome, {user?.email}
+          </span>
         </div>
       </div>
     </header>
