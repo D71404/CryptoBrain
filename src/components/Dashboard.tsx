@@ -21,7 +21,7 @@ export const Dashboard = () => {
       />
       
       {/* Content layer */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center pt-8 p-6">
+      <div className="relative z-10 min-h-screen flex items-center justify-center pt-2 p-6">
         <UnifiedChat />
       </div>
     </div>
