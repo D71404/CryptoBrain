@@ -256,10 +256,9 @@ export const UnifiedChat = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-4">
+              <CardContent className="flex-1 flex flex-col p-4 space-y-4">
                 <ScrollArea className="flex-1 pr-3">
-                  <div className="space-y-4">
-                    
+                  <div className="space-y-4 min-h-[200px]">
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-4 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -307,21 +306,22 @@ export const UnifiedChat = () => {
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
+                
+                {/* Prompt Input Box moved inside card */}
+                <div className="pt-2 border-t border-gray-700">
+                  <PromptInputBox 
+                    onSend={handleSendMessage} 
+                    isLoading={loading} 
+                    placeholder={`Ask about ${activeTabConfig.title.toLowerCase()}...`} 
+                    activeSection="knowledge"
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         ))}
       </Tabs>
 
-      {/* Enhanced Prompt Input Box */}
-      <div className="w-full">
-        <PromptInputBox 
-          onSend={handleSendMessage} 
-          isLoading={loading} 
-          placeholder={`Ask about ${activeTabConfig.title.toLowerCase()}...`} 
-          activeSection="knowledge"
-        />
-      </div>
     </div>
   );
 };
