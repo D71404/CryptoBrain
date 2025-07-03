@@ -267,12 +267,47 @@ export const UnifiedChat = () => {
                           }`}>
                             {message.isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                           </div>
-                          <div className={`rounded-2xl px-4 py-3 ${
+                          <div className={`rounded-2xl px-4 py-3 max-w-full ${
                             message.isUser 
                               ? 'bg-blue-600 text-white' 
                               : 'bg-gray-800 text-gray-100 border border-gray-700'
                           }`}>
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                            <div className="text-sm leading-relaxed break-words overflow-wrap-anywhere">
+                              {message.isUser ? (
+                                <p className="whitespace-pre-wrap">{message.content}</p>
+                              ) : (
+                                <div className="prose prose-sm prose-invert max-w-none">
+                                  {message.content.split('\n').map((line, index) => {
+                                    // Check if line contains links
+                                    const linkRegex = /(https?:\/\/[^\s]+)/g;
+                                    if (linkRegex.test(line)) {
+                                      const parts = line.split(linkRegex);
+                                      return (
+                                        <p key={index} className="mb-2 last:mb-0">
+                                          {parts.map((part, partIndex) => {
+                                            if (linkRegex.test(part)) {
+                                              return (
+                                                <a
+                                                  key={partIndex}
+                                                  href={part}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-orange-400 hover:text-orange-300 underline break-all"
+                                                >
+                                                  {part}
+                                                </a>
+                                              );
+                                            }
+                                            return part;
+                                          })}
+                                        </p>
+                                      );
+                                    }
+                                    return line ? <p key={index} className="mb-2 last:mb-0">{line}</p> : <br key={index} />;
+                                  })}
+                                </div>
+                              )}
+                            </div>
                             <p className="text-xs opacity-60 mt-2">
                               {message.timestamp.toLocaleTimeString()}
                               {message.filter && message.filter !== 'all' && (
