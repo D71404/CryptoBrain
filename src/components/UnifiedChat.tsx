@@ -258,7 +258,7 @@ export const UnifiedChat = () => {
               
               <CardContent className="flex-1 flex flex-col p-4 space-y-4">
                 <ScrollArea className="flex-1 pr-3">
-                  <div className="space-y-4 min-h-[200px]">
+                  <div className="space-y-4">
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-4 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
