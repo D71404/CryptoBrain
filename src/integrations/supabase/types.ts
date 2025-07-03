@@ -9,6 +9,78 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      n8n_chat_histories_events: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
+      n8n_chat_histories_knowledge: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
+      n8n_chat_histories_news: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
+      n8n_chat_histories_stats: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

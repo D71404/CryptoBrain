@@ -259,56 +259,6 @@ export const UnifiedChat = () => {
               <CardContent className="flex-1 flex flex-col p-4">
                 <ScrollArea className="flex-1 pr-3">
                   <div className="space-y-4">
-                    {messages.filter(msg => msg.tab === key).length === 0 && (
-                      <div className="text-center py-6">
-                        <div>
-                          <config.icon className="mx-auto mb-3 h-8 w-8 text-orange-400" />
-                          <p className="text-gray-300 text-sm mb-1">
-                            Welcome to {config.title}
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            {config.subtitle}
-                          </p>
-                        </div>
-                        
-                        {/* Example Questions */}
-                        <div className="grid gap-2 max-w-2xl mx-auto">
-                          <h3 className="text-sm font-semibold text-gray-300 mb-2 flex items-center justify-center gap-1">
-                            <span className="text-lg">💡</span>
-                            Try these examples:
-                          </h3>
-                          <div className="grid md:grid-cols-2 gap-2">
-                            {config.examples.map((example, index) => (
-                              <button
-                                key={index}
-                                onClick={() => handleExampleClick(example)}
-                                className="group relative text-left p-3 rounded-lg border border-gray-600 transition-all duration-300 
-                                  bg-gradient-to-br from-gray-800/80 to-gray-900/80 
-                                  hover:from-gray-700/80 hover:to-gray-800/80
-                                  hover:border-orange-500/50 hover:scale-[1.02] hover:shadow-lg
-                                  backdrop-blur-sm"
-                              >
-                                <div className="flex items-start gap-2">
-                                  <div className="flex-shrink-0 w-5 h-5 rounded bg-orange-500/20 
-                                    border border-orange-500/40 flex items-center justify-center
-                                    group-hover:bg-orange-500/30 group-hover:scale-110 transition-all duration-300">
-                                    <config.icon className="w-3 h-3 text-orange-400 group-hover:scale-110 transition-transform" />
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="text-gray-200 group-hover:text-white font-medium leading-relaxed transition-colors text-sm">
-                                      {example}
-                                    </p>
-                                    <div className="mt-1 text-xs text-orange-400 opacity-70 group-hover:opacity-100 transition-opacity">
-                                      Click to try →
-                                    </div>
-                                  </div>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
                     
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
