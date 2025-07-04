@@ -258,32 +258,32 @@ export const UnifiedChat = () => {
               
               <CardContent className="flex-1 flex flex-col p-4 space-y-4">
                 <ScrollArea className="flex-1 pr-3">
-                  <div className="space-y-4">
+                  <div className="space-y-4 px-2">
                     {messages.filter(msg => msg.tab === key).map(message => (
-                      <div key={message.id} className={`flex gap-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-4 max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                      <div key={message.id} className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex gap-3 max-w-[85%] min-w-0 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                             message.isUser ? 'bg-blue-600' : 'bg-gray-700'
                           }`}>
-                            {message.isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+                            {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
                           </div>
-                          <div className={`rounded-2xl px-4 py-3 max-w-full ${
+                          <div className={`rounded-2xl px-3 py-2 min-w-0 flex-1 ${
                             message.isUser 
                               ? 'bg-blue-600 text-white' 
                               : 'bg-gray-800 text-gray-100 border border-gray-700'
                           }`}>
-                            <div className="text-sm leading-relaxed break-words overflow-wrap-anywhere">
+                            <div className="text-sm leading-relaxed">
                               {message.isUser ? (
-                                <p className="whitespace-pre-wrap">{message.content}</p>
+                                <p className="whitespace-pre-wrap break-words">{message.content}</p>
                               ) : (
-                                <div className="prose prose-sm prose-invert max-w-none">
+                                <div className="space-y-2">
                                   {message.content.split('\n').map((line, index) => {
                                     // Check if line contains links
                                     const linkRegex = /(https?:\/\/[^\s]+)/g;
                                     if (linkRegex.test(line)) {
                                       const parts = line.split(linkRegex);
                                       return (
-                                        <p key={index} className="mb-2 last:mb-0">
+                                        <p key={index} className="break-words">
                                           {parts.map((part, partIndex) => {
                                             if (linkRegex.test(part)) {
                                               return (
@@ -292,7 +292,7 @@ export const UnifiedChat = () => {
                                                   href={part}
                                                   target="_blank"
                                                   rel="noopener noreferrer"
-                                                  className="text-orange-400 hover:text-orange-300 underline break-all"
+                                                  className="text-orange-400 hover:text-orange-300 underline break-all inline-block"
                                                 >
                                                   {part}
                                                 </a>
@@ -303,12 +303,12 @@ export const UnifiedChat = () => {
                                         </p>
                                       );
                                     }
-                                    return line ? <p key={index} className="mb-2 last:mb-0">{line}</p> : <br key={index} />;
+                                    return line ? <p key={index} className="break-words">{line}</p> : <br key={index} />;
                                   })}
                                 </div>
                               )}
                             </div>
-                            <p className="text-xs opacity-60 mt-2">
+                            <p className="text-xs opacity-60 mt-2 break-words">
                               {message.timestamp.toLocaleTimeString()}
                               {message.filter && message.filter !== 'all' && (
                                 <span className="ml-2 px-1 py-0.5 bg-orange-500/20 text-orange-300 rounded text-xs">
