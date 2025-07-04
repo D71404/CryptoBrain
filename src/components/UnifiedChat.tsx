@@ -257,26 +257,26 @@ export const UnifiedChat = () => {
               </CardHeader>
               
               <CardContent className="flex-1 flex flex-col p-4 space-y-4">
-                <ScrollArea className="flex-1 pr-3">
-                  <div className="space-y-4 px-1">
+                <ScrollArea className="flex-1 pr-2">
+                  <div className="space-y-3 px-1">
                     {messages.filter(msg => msg.tab === key).map(message => (
-                      <div key={message.id} className={`flex gap-2 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-2 max-w-[90%] min-w-0 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex gap-3 max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                             message.isUser ? 'bg-blue-600' : 'bg-gray-700'
                           }`}>
                             {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
                           </div>
-                          <div className={`rounded-2xl px-3 py-2 min-w-0 flex-1 overflow-hidden ${
+                          <div className={`rounded-2xl px-4 py-3 ${
                             message.isUser 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-gray-800 text-gray-100 border border-gray-700'
+                              ? 'bg-blue-600 text-white max-w-full' 
+                              : 'bg-gray-800 text-gray-100 border border-gray-700 max-w-full'
                           }`}>
-                            <div className="text-sm leading-relaxed overflow-hidden">
+                            <div className="text-sm leading-relaxed">
                               {message.isUser ? (
-                                <p className="whitespace-pre-wrap break-words word-wrap">{message.content}</p>
+                                <div className="whitespace-pre-wrap break-words">{message.content}</div>
                               ) : (
-                                <div className="space-y-1 overflow-hidden">
+                                <div className="space-y-2">
                                   {message.content
                                     .replace(/\*\*/g, '') // Remove bold markers
                                     .replace(/\*/g, '') // Remove asterisks
@@ -287,7 +287,7 @@ export const UnifiedChat = () => {
                                     if (linkRegex.test(line)) {
                                       const parts = line.split(linkRegex);
                                       return (
-                                        <p key={index} className="break-words word-wrap overflow-hidden">
+                                        <div key={index} className="break-words">
                                           {parts.map((part, partIndex) => {
                                             if (linkRegex.test(part)) {
                                               return (
@@ -296,7 +296,7 @@ export const UnifiedChat = () => {
                                                   href={part}
                                                   target="_blank"
                                                   rel="noopener noreferrer"
-                                                  className="text-orange-400 hover:text-orange-300 underline break-all inline-block max-w-full overflow-hidden text-ellipsis"
+                                                  className="text-orange-400 hover:text-orange-300 underline break-all inline-block"
                                                 >
                                                   {part}
                                                 </a>
@@ -304,22 +304,22 @@ export const UnifiedChat = () => {
                                             }
                                             return <span key={partIndex} className="break-words">{part}</span>;
                                           })}
-                                        </p>
+                                        </div>
                                       );
                                     }
-                                    return line ? <p key={index} className="break-words word-wrap overflow-hidden">{line}</p> : <br key={index} />;
+                                    return line ? <div key={index} className="break-words">{line}</div> : <div key={index} className="h-2" />;
                                   })}
                                 </div>
                               )}
                             </div>
-                            <p className="text-xs opacity-60 mt-2 break-words">
-                              {message.timestamp.toLocaleTimeString()}
+                            <div className="text-xs opacity-60 mt-2 flex flex-wrap items-center gap-2">
+                              <span>{message.timestamp.toLocaleTimeString()}</span>
                               {message.filter && message.filter !== 'all' && (
-                                <span className="ml-2 px-1 py-0.5 bg-orange-500/20 text-orange-300 rounded text-xs">
+                                <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
                                   {message.filter}
                                 </span>
                               )}
-                            </p>
+                            </div>
                           </div>
                         </div>
                       </div>
