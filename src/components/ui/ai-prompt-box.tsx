@@ -1,7 +1,7 @@
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode, Newspaper, BarChart3, Search } from 'lucide-react';
+import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode, Newspaper, BarChart3, Search, Twitter, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
 // Utility function for className merging
@@ -443,29 +443,23 @@ interface PromptInputBoxProps {
 }
 
 const SECTION_BUTTONS = {
-  news: {
-    icon: Newspaper,
-    label: 'News',
+  insights: {
+    icon: BrainCog,
+    label: 'Insights',
     color: 'text-blue-400',
     activeColor: 'bg-blue-500/15 border-blue-500 text-blue-400',
   },
-  stats: {
-    icon: BarChart3,
-    label: 'Stats',
+  'social-pulse': {
+    icon: Twitter,
+    label: 'Social Pulse',
     color: 'text-green-400',
     activeColor: 'bg-green-500/15 border-green-500 text-green-400',
   },
-  knowledge: {
-    icon: BrainCog,
-    label: 'Knowledge',
+  'alpha-calendar': {
+    icon: Calendar,
+    label: 'Alpha Calendar',
     color: 'text-orange-400',
     activeColor: 'bg-orange-500/15 border-orange-500 text-orange-400',
-  },
-  'smart-search': {
-    icon: Search,
-    label: 'Search',
-    color: 'text-amber-400',
-    activeColor: 'bg-amber-500/15 border-amber-500 text-amber-400',
   },
 };
 
