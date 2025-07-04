@@ -258,32 +258,36 @@ export const UnifiedChat = () => {
               
               <CardContent className="flex-1 flex flex-col p-4 space-y-4">
                 <ScrollArea className="flex-1 pr-3">
-                  <div className="space-y-4 px-2">
+                  <div className="space-y-4 px-1">
                     {messages.filter(msg => msg.tab === key).map(message => (
-                      <div key={message.id} className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-3 max-w-[85%] min-w-0 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div key={message.id} className={`flex gap-2 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex gap-2 max-w-[90%] min-w-0 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                             message.isUser ? 'bg-blue-600' : 'bg-gray-700'
                           }`}>
                             {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
                           </div>
-                          <div className={`rounded-2xl px-3 py-2 min-w-0 flex-1 ${
+                          <div className={`rounded-2xl px-3 py-2 min-w-0 flex-1 overflow-hidden ${
                             message.isUser 
                               ? 'bg-blue-600 text-white' 
                               : 'bg-gray-800 text-gray-100 border border-gray-700'
                           }`}>
-                            <div className="text-sm leading-relaxed">
+                            <div className="text-sm leading-relaxed overflow-hidden">
                               {message.isUser ? (
-                                <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                                <p className="whitespace-pre-wrap break-words word-wrap">{message.content}</p>
                               ) : (
-                                <div className="space-y-2">
-                                  {message.content.split('\n').map((line, index) => {
+                                <div className="space-y-1 overflow-hidden">
+                                  {message.content
+                                    .replace(/\*\*/g, '') // Remove bold markers
+                                    .replace(/\*/g, '') // Remove asterisks
+                                    .split('\n')
+                                    .map((line, index) => {
                                     // Check if line contains links
                                     const linkRegex = /(https?:\/\/[^\s]+)/g;
                                     if (linkRegex.test(line)) {
                                       const parts = line.split(linkRegex);
                                       return (
-                                        <p key={index} className="break-words">
+                                        <p key={index} className="break-words word-wrap overflow-hidden">
                                           {parts.map((part, partIndex) => {
                                             if (linkRegex.test(part)) {
                                               return (
@@ -292,18 +296,18 @@ export const UnifiedChat = () => {
                                                   href={part}
                                                   target="_blank"
                                                   rel="noopener noreferrer"
-                                                  className="text-orange-400 hover:text-orange-300 underline break-all inline-block"
+                                                  className="text-orange-400 hover:text-orange-300 underline break-all inline-block max-w-full overflow-hidden text-ellipsis"
                                                 >
                                                   {part}
                                                 </a>
                                               );
                                             }
-                                            return part;
+                                            return <span key={partIndex} className="break-words">{part}</span>;
                                           })}
                                         </p>
                                       );
                                     }
-                                    return line ? <p key={index} className="break-words">{line}</p> : <br key={index} />;
+                                    return line ? <p key={index} className="break-words word-wrap overflow-hidden">{line}</p> : <br key={index} />;
                                   })}
                                 </div>
                               )}
