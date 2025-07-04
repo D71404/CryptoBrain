@@ -677,7 +677,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                     disabled={isRecording}
                   >
                     <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                      <BrainCog className="w-3.5 h-3.5" />
+                      <IconComponent className="w-3.5 h-3.5" />
                     </div>
                   </button>
                 );
