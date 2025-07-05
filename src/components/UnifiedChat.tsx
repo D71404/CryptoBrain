@@ -63,8 +63,8 @@ const CALENDAR_FILTERS = [{
 }];
 
 const SOCIAL_PULSE_OPTIONS = [
-  { value: 'top', label: 'Top Tweets' },
-  { value: 'latest', label: 'Latest Tweets' }
+  { value: 'top', label: 'Top' },
+  { value: 'latest', label: 'Latest' }
 ];
 
 export const UnifiedChat = () => {
