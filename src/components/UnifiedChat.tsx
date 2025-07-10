@@ -309,6 +309,11 @@ export const UnifiedChat = () => {
     handleSendMessage(example);
   };
 
+  const handleEventClick = (event: typeof MOCKUP_CALENDAR_EVENTS[0]) => {
+    const message = `Tell me more about ${event.title}`;
+    handleSendMessage(message);
+  };
+
   const activeTabConfig = TAB_CONFIG[activeTab];
 
   return (
@@ -406,33 +411,42 @@ export const UnifiedChat = () => {
                   <div className="space-y-3 px-1">
                     {/* Show mockup events for Alpha Calendar */}
                     {key === 'alpha-calendar' && messages.filter(msg => msg.tab === key).length === 0 && (
-                      <div className="space-y-3">
+                      <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
                         <div className="text-center text-gray-400 text-sm mb-4">
                           📅 Upcoming Crypto Events Preview
                         </div>
-                        {MOCKUP_CALENDAR_EVENTS.map(event => (
-                          <div key={event.id} className="bg-gray-800/50 border border-gray-700 rounded-2xl p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="text-white font-medium text-sm leading-tight">{event.title}</h4>
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                event.impact === 'High' ? 'bg-red-500/20 text-red-300' :
-                                event.impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
-                                'bg-green-500/20 text-green-300'
-                              }`}>
-                                {event.impact}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-orange-400 text-xs">{event.date}</span>
-                              <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs">
-                                {event.type}
-                              </span>
-                            </div>
-                            <p className="text-gray-400 text-xs leading-relaxed">{event.description}</p>
-                          </div>
-                        ))}
+                        <div className="grid gap-2">
+                          {MOCKUP_CALENDAR_EVENTS.map(event => (
+                            <Button
+                              key={event.id}
+                              variant="outline"
+                              onClick={() => handleEventClick(event)}
+                              className="w-full bg-gray-800/50 border-gray-600 hover:bg-gray-700/50 text-left p-4 h-auto justify-start"
+                            >
+                              <div className="flex flex-col items-start w-full">
+                                <div className="flex items-start justify-between w-full mb-2">
+                                  <h4 className="text-white font-medium text-sm leading-tight text-left">{event.title}</h4>
+                                  <span className={`px-2 py-1 rounded text-xs font-medium ml-2 flex-shrink-0 ${
+                                    event.impact === 'High' ? 'bg-red-500/20 text-red-300' :
+                                    event.impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
+                                    'bg-green-500/20 text-green-300'
+                                  }`}>
+                                    {event.impact}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-orange-400 text-xs">{event.date}</span>
+                                  <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs">
+                                    {event.type}
+                                  </span>
+                                </div>
+                                <p className="text-gray-400 text-xs leading-relaxed text-left">{event.description}</p>
+                              </div>
+                            </Button>
+                          ))}
+                        </div>
                         <div className="text-center text-gray-500 text-xs mt-4">
-                          Ask questions about upcoming crypto events to get real-time data
+                          Click on any event to learn more or ask questions about upcoming crypto events
                         </div>
                       </div>
                     )}
