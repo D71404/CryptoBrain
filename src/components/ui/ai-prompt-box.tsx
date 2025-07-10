@@ -1,7 +1,7 @@
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode, Newspaper, BarChart3, Search, Twitter, Calendar } from 'lucide-react';
+import { ArrowUp, Paperclip, Square, X, StopCircle, Globe, BrainCog, FolderCode, Newspaper, BarChart3, Search, Twitter, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
 // Utility function for className merging
@@ -469,7 +469,6 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
   const [files, setFiles] = React.useState<File[]>([]);
   const [filePreviews, setFilePreviews] = React.useState<{ [key: string]: string }>({});
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-  const [isRecording, setIsRecording] = React.useState(false);
   const [showSearch, setShowSearch] = React.useState(false);
   const [showThink, setShowThink] = React.useState(false);
   const [showCanvas, setShowCanvas] = React.useState(false);
@@ -565,14 +564,6 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
     }
   };
 
-  const handleStartRecording = () => console.log("Started recording");
-
-  const handleStopRecording = (duration: number) => {
-    console.log(`Stopped recording after ${duration} seconds`);
-    setIsRecording(false);
-    onSend(`[Voice message - ${duration} seconds]`, []);
-  };
-
   const hasContent = input.trim() !== "" || files.length > 0;
 
   return (
@@ -584,16 +575,15 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
         onSubmit={handleSubmit}
         className={cn(
           "w-full bg-gray-900/90 border-gray-600 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 ease-in-out backdrop-blur-sm",
-          isRecording && "border-red-500/70",
           className
         )}
-        disabled={isLoading || isRecording}
+        disabled={isLoading}
         ref={ref || promptBoxRef}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        {files.length > 0 && !isRecording && (
+        {files.length > 0 && (
           <div className="flex flex-wrap gap-2 p-0 pb-1 transition-all duration-300">
             {files.map((file, index) => (
               <div key={index} className="relative group">
@@ -623,12 +613,7 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
           </div>
         )}
 
-        <div
-          className={cn(
-            "transition-all duration-300",
-            isRecording ? "h-0 overflow-hidden opacity-0" : "opacity-100"
-          )}
-        >
+        <div className="opacity-100">
           <PromptInputTextarea
             placeholder={
               showSearch
@@ -643,21 +628,8 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
           />
         </div>
 
-        {isRecording && (
-          <VoiceRecorder
-            isRecording={isRecording}
-            onStartRecording={handleStartRecording}
-            onStopRecording={handleStopRecording}
-          />
-        )}
-
         <PromptInputActions className="flex items-center justify-between gap-2 p-0 pt-2">
-          <div
-            className={cn(
-              "flex items-center gap-1 transition-opacity duration-300",
-              isRecording ? "opacity-0 invisible h-0" : "opacity-100 visible"
-            )}
-          >
+          <div className="flex items-center gap-1">
             {/* Section Buttons replacing attachment */}
             <div className="flex items-center gap-1">
               {Object.entries(SECTION_BUTTONS).map(([key, config]) => {
@@ -674,7 +646,6 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                         ? config.activeColor
                         : "bg-transparent border-transparent text-gray-400 hover:text-gray-200 hover:bg-gray-700/50"
                     )}
-                    disabled={isRecording}
                   >
                     <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
                       <IconComponent className="w-3.5 h-3.5" />
@@ -683,18 +654,15 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                 );
               })}
             </div>
-
           </div>
 
           <PromptInputAction
             tooltip={
               isLoading
                 ? "Stop generation"
-                : isRecording
-                ? "Stop recording"
                 : hasContent
                 ? "Send message"
-                : "Voice message"
+                : "Send message"
             }
           >
             <Button
@@ -702,27 +670,19 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
               size="icon"
               className={cn(
                 "h-8 w-8 rounded-full transition-all duration-200",
-                isRecording
-                  ? "bg-transparent hover:bg-gray-600/30 text-red-500 hover:text-red-400"
-                  : hasContent
+                hasContent
                   ? "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
                   : "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white"
               )}
               onClick={() => {
-                if (isRecording) setIsRecording(false);
-                else if (hasContent) handleSubmit();
-                else setIsRecording(true);
+                if (hasContent) handleSubmit();
               }}
               disabled={isLoading && !hasContent}
             >
               {isLoading ? (
                 <Square className="h-4 w-4 fill-current animate-pulse" />
-              ) : isRecording ? (
-                <StopCircle className="h-5 w-5 text-red-500" />
-              ) : hasContent ? (
-                <ArrowUp className="h-4 w-4" />
               ) : (
-                <Mic className="h-5 w-5" />
+                <ArrowUp className="h-4 w-4" />
               )}
             </Button>
           </PromptInputAction>
