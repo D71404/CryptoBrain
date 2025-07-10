@@ -42,66 +42,36 @@ const TAB_CONFIG = {
   }
 };
 
+const CALENDAR_FILTERS = [{
+  value: 'all',
+  label: 'All Events'
+}, {
+  value: 'conference',
+  label: 'Conference'
+}, {
+  value: 'burn',
+  label: 'Burn'
+}, {
+  value: 'etf',
+  label: 'ETF'
+}, {
+  value: 'fork',
+  label: 'Fork'
+}, {
+  value: 'listings',
+  label: 'Listings'
+}];
+
 const SOCIAL_PULSE_OPTIONS = [
   { value: 'top', label: 'Top' },
   { value: 'latest', label: 'Latest' }
-];
-
-const MOCKUP_CALENDAR_EVENTS = [
-  {
-    id: '1',
-    title: '🏛️ Bitcoin ETF Decision - SEC Review',
-    date: 'Jan 15, 2025',
-    type: 'ETF',
-    description: 'SEC to announce decision on Bitcoin ETF applications',
-    impact: 'High'
-  },
-  {
-    id: '2',
-    title: '🔥 Ethereum Token Burn Event',
-    date: 'Jan 18, 2025',
-    type: 'Burn',
-    description: 'Quarterly ETH burn mechanism activation',
-    impact: 'Medium'
-  },
-  {
-    id: '3',
-    title: '📊 Binance Coin Listing',
-    date: 'Jan 22, 2025',
-    type: 'Listings',
-    description: 'New altcoin listing on Binance exchange',
-    impact: 'Medium'
-  },
-  {
-    id: '4',
-    title: '🚀 Bitcoin Conference Miami',
-    date: 'Feb 5-7, 2025',
-    type: 'Conference',
-    description: 'Annual Bitcoin conference with industry leaders',
-    impact: 'High'
-  },
-  {
-    id: '5',
-    title: '⚡ Lightning Network Fork',
-    date: 'Feb 12, 2025',
-    type: 'Fork',
-    description: 'Major Lightning Network protocol upgrade',
-    impact: 'High'
-  },
-  {
-    id: '6',
-    title: '💼 Ethereum Enterprise Conference',
-    date: 'Feb 20-21, 2025',
-    type: 'Conference',
-    description: 'Corporate adoption and enterprise solutions',
-    impact: 'Medium'
-  }
 ];
 
 export const UnifiedChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof typeof TAB_CONFIG>('insights');
+  const [calendarFilter, setCalendarFilter] = useState('all');
   const [socialPulseType, setSocialPulseType] = useState('top');
   const [showSocialPulseForm, setShowSocialPulseForm] = useState(false);
   const [pendingSocialMessage, setPendingSocialMessage] = useState<string>('');
@@ -128,6 +98,7 @@ export const UnifiedChat = () => {
       const payload = {
         message: messageData.message,
         tab: activeTab,
+        filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined,
         socialPulseType: activeTab === 'social-pulse' ? socialPulseType : undefined,
         timestamp: messageData.timestamp,
         files: messageData.files?.map(file => ({
@@ -177,7 +148,7 @@ export const UnifiedChat = () => {
     
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: `${pendingSocialMessage} (${socialPulseType === 'top' ? 'Top' : 'Latest'})`,
+      content: `${pendingSocialMessage} (${socialPulseType === 'top' ? 'Top Tweets' : 'Latest Tweets'})`,
       isUser: true,
       timestamp: new Date(),
       tab: activeTab,
@@ -255,7 +226,8 @@ export const UnifiedChat = () => {
       content: message,
       isUser: true,
       timestamp: new Date(),
-      tab: activeTab
+      tab: activeTab,
+      filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -286,7 +258,8 @@ export const UnifiedChat = () => {
         content: botContent,
         isUser: false,
         timestamp: new Date(),
-        tab: activeTab
+        tab: activeTab,
+        filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -307,11 +280,6 @@ export const UnifiedChat = () => {
 
   const handleExampleClick = (example: string) => {
     handleSendMessage(example);
-  };
-
-  const handleEventClick = (event: typeof MOCKUP_CALENDAR_EVENTS[0]) => {
-    const message = `Tell me more about ${event.title}`;
-    handleSendMessage(message);
   };
 
   const activeTabConfig = TAB_CONFIG[activeTab];
@@ -403,55 +371,31 @@ export const UnifiedChat = () => {
                       </CardDescription>
                     </div>
                   </div>
+                  
+                  {/* Alpha Calendar Filter */}
+                  {key === 'alpha-calendar' && (
+                    <div className="flex items-center gap-2">
+                      <Filter className="w-4 h-4 text-gray-400" />
+                      <Select value={calendarFilter} onValueChange={setCalendarFilter}>
+                        <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600">
+                          {CALENDAR_FILTERS.map(filter => (
+                            <SelectItem key={filter.value} value={filter.value} className="text-white hover:bg-gray-700">
+                              {filter.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
               </CardHeader>
               
               <CardContent className="flex-1 flex flex-col p-4 space-y-4">
                 <ScrollArea className="flex-1 pr-2">
                   <div className="space-y-3 px-1">
-                    {/* Show mockup events for Alpha Calendar */}
-                    {key === 'alpha-calendar' && messages.filter(msg => msg.tab === key).length === 0 && (
-                      <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
-                        <div className="text-center text-gray-400 text-sm mb-4">
-                          📅 Upcoming Crypto Events Preview
-                        </div>
-                        <div className="grid gap-2">
-                          {MOCKUP_CALENDAR_EVENTS.map(event => (
-                            <Button
-                              key={event.id}
-                              variant="outline"
-                              onClick={() => handleEventClick(event)}
-                              className="w-full bg-gray-800/50 border-gray-600 hover:bg-gray-700/50 text-left p-4 h-auto justify-start"
-                            >
-                              <div className="flex flex-col items-start w-full">
-                                <div className="flex items-start justify-between w-full mb-2">
-                                  <h4 className="text-white font-medium text-sm leading-tight text-left">{event.title}</h4>
-                                  <span className={`px-2 py-1 rounded text-xs font-medium ml-2 flex-shrink-0 ${
-                                    event.impact === 'High' ? 'bg-red-500/20 text-red-300' :
-                                    event.impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
-                                    'bg-green-500/20 text-green-300'
-                                  }`}>
-                                    {event.impact}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-orange-400 text-xs">{event.date}</span>
-                                  <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs">
-                                    {event.type}
-                                  </span>
-                                </div>
-                                <p className="text-gray-400 text-xs leading-relaxed text-left">{event.description}</p>
-                              </div>
-                            </Button>
-                          ))}
-                        </div>
-                        <div className="text-center text-gray-500 text-xs mt-4">
-                          Click on any event to learn more or ask questions about upcoming crypto events
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Regular chat messages */}
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-3 max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -501,7 +445,7 @@ export const UnifiedChat = () => {
                               <span>{message.timestamp.toLocaleTimeString()}</span>
                               {message.filter && message.filter !== 'all' && (
                                 <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
-                                  {message.filter === 'top' ? 'Top' : message.filter === 'latest' ? 'Latest' : message.filter}
+                                  {message.filter === 'top' ? 'Top Tweets' : message.filter === 'latest' ? 'Latest Tweets' : message.filter}
                                 </span>
                               )}
                             </div>
