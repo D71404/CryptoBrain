@@ -118,16 +118,6 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
         >
-          <div className="w-full flex h-40 md:h-64 relative overflow-hidden">
-            <img
-              src="https://blocks.mvp-subha.me/assets/earth.png"
-              alt="Earth"
-              className="absolute px-4 top-0 left-1/2 -translate-x-1/2 mx-auto -z-10 opacity-80"
-              style={{
-                filter: "hue-rotate(15deg) saturate(1.5) brightness(1.2) sepia(0.3) drop-shadow(0 0 20px rgba(234, 88, 12, 0.3))"
-              }}
-            />
-          </div>
           <div className="relative z-10 mx-auto max-w-5xl overflow-hidden rounded-lg shadow-[0_0_50px_rgba(234,88,12,0.2)]">
             <img
               src="https://blocks.mvp-subha.me/assets/lunexa-db.png"
