@@ -16,7 +16,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-[#0a0613] pb-10 pt-32 font-light text-white antialiased md:pb-16 md:pt-20"
+      className="relative w-full overflow-hidden bg-[#0a0613] h-screen font-light text-white antialiased"
     >
       {/* Animated squares background */}
       <div className="absolute inset-0 w-full h-full">
@@ -68,7 +68,7 @@ export default function Hero() {
         </div>
       </nav>
 
-      <div className="container relative z-10 mx-auto max-w-2xl px-4 text-center md:max-w-4xl md:px-6 lg:max-w-7xl">
+      <div className="container relative z-10 mx-auto max-w-2xl px-4 text-center md:max-w-4xl md:px-6 lg:max-w-7xl h-full flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
