@@ -112,20 +112,6 @@ export default function Hero() {
             </a>
           </div>
         </motion.div>
-        <motion.div
-          className="relative"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-        >
-          <div className="relative z-10 mx-auto max-w-5xl overflow-hidden rounded-lg shadow-[0_0_50px_rgba(234,88,12,0.2)]">
-            <img
-              src="https://blocks.mvp-subha.me/assets/lunexa-db.png"
-              alt="CryptoBrain Dashboard"
-              className="h-auto w-full rounded-lg border border-white/10"
-            />
-          </div>
-        </motion.div>
       </div>
     </section>
   );
