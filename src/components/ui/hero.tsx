@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Squares } from "./squares-background";
 
 export default function Hero() {
   const navigate = useNavigate();
@@ -16,19 +17,28 @@ export default function Hero() {
   return (
     <section
       className="relative w-full overflow-hidden bg-[#0a0613] pb-10 pt-32 font-light text-white antialiased md:pb-16 md:pt-20"
-      style={{
-        background: "linear-gradient(135deg, #0a0613 0%, #271a0d 100%)",
-      }}
     >
+      {/* Animated squares background */}
+      <div className="absolute inset-0 w-full h-full">
+        <Squares 
+          direction="diagonal"
+          speed={0.3}
+          squareSize={60}
+          borderColor="rgba(234, 88, 12, 0.1)"
+          hoverFillColor="rgba(234, 88, 12, 0.05)"
+        />
+      </div>
+
+      {/* Orange gradient overlays */}
       <div
-        className="absolute right-0 top-0 h-1/2 w-1/2"
+        className="absolute right-0 top-0 h-1/2 w-1/2 z-10"
         style={{
           background:
             "radial-gradient(circle at 70% 30%, rgba(234, 88, 12, 0.15) 0%, rgba(13, 10, 25, 0) 60%)",
         }}
       />
       <div
-        className="absolute left-0 top-0 h-1/2 w-1/2 -scale-x-100"
+        className="absolute left-0 top-0 h-1/2 w-1/2 -scale-x-100 z-10"
         style={{
           background:
             "radial-gradient(circle at 70% 30%, rgba(234, 88, 12, 0.15) 0%, rgba(13, 10, 25, 0) 60%)",
