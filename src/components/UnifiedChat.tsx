@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Bot, TrendingUp, Twitter, Calendar, Filter } from 'lucide-react';
+import { User, Bot, TrendingUp, Twitter, Calendar } from 'lucide-react';
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 
 interface ChatMessage {
@@ -42,29 +42,17 @@ const TAB_CONFIG = {
   }
 };
 
-const CALENDAR_FILTERS = [{
-  value: 'all',
-  label: 'All Events'
-}, {
-  value: 'conference',
-  label: 'Conference'
-}, {
-  value: 'burn',
-  label: 'Burn'
-}, {
-  value: 'etf',
-  label: 'ETF'
-}, {
-  value: 'fork',
-  label: 'Fork'
-}, {
-  value: 'listings',
-  label: 'Listings'
-}];
-
 const SOCIAL_PULSE_OPTIONS = [
   { value: 'top', label: 'Top' },
   { value: 'latest', label: 'Latest' }
+];
+
+const EVENT_TYPES = [
+  'Conference',
+  'Burn',
+  'ETF',
+  'Fork',
+  'Listings'
 ];
 
 export const UnifiedChat = () => {
@@ -372,22 +360,17 @@ export const UnifiedChat = () => {
                     </div>
                   </div>
                   
-                  {/* Alpha Calendar Filter */}
+                  {/* Alpha Calendar Event Types */}
                   {key === 'alpha-calendar' && (
                     <div className="flex items-center gap-2">
-                      <Filter className="w-4 h-4 text-gray-400" />
-                      <Select value={calendarFilter} onValueChange={setCalendarFilter}>
-                        <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
-                          {CALENDAR_FILTERS.map(filter => (
-                            <SelectItem key={filter.value} value={filter.value} className="text-white hover:bg-gray-700">
-                              {filter.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="text-xs text-gray-400">Event Types:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {EVENT_TYPES.map(type => (
+                          <span key={type} className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
+                            {type}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
