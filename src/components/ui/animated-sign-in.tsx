@@ -8,8 +8,6 @@ import {
   Github,
   Twitter,
   Linkedin,
-  Sun,
-  Moon,
 } from "lucide-react";
 
 interface AnimatedSignInProps {
@@ -35,7 +33,6 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
 }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(true);
@@ -55,11 +52,6 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
     } else {
       setIsEmailValid(true);
     }
-  };
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
   };
 
   // Create particles
@@ -148,10 +140,6 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0613] via-[#271a0d] to-[#0a0613] flex items-center justify-center p-4 relative overflow-hidden">
       <canvas id="particles" className="absolute inset-0 pointer-events-none"></canvas>
-
-      <div className="theme-toggle absolute top-4 right-4 z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors" onClick={toggleDarkMode}>
-        {isDarkMode ? <Sun size={20} className="text-orange-400" /> : <Moon size={20} className="text-orange-400" />}
-      </div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="crypto-card rounded-lg p-8 shadow-2xl animate-fade-in">
