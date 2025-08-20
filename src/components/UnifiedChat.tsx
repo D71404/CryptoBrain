@@ -362,9 +362,9 @@ export const UnifiedChat = () => {
                   
                   {/* Alpha Calendar Event Types */}
                   {key === 'alpha-calendar' && (
-                    <div className="flex items-center gap-2">
-                      <div className="text-xs text-gray-400">Event Types:</div>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="text-sm font-semibold text-orange-400">Event Types</div>
+                      <div className="flex flex-wrap gap-1 justify-end">
                         {EVENT_TYPES.map(type => (
                           <span key={type} className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
                             {type}
