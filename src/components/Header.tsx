@@ -28,8 +28,7 @@ export const Header = () => {
             variant="outline" 
             className="text-white border-orange-400/40 bg-orange-500/20 hover:bg-orange-500/30 backdrop-blur-sm text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 min-h-[36px] sm:min-h-[40px]"
           >
-            <span className="hidden sm:inline">Sign Out</span>
-            <span className="sm:hidden">Out</span>
+            Sign Out
           </Button>
         </div>
       </div>
