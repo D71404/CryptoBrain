@@ -46,23 +46,25 @@ export default function Hero() {
       />
 
       {/* Navigation Bar */}
-      <nav className="absolute top-0 left-0 right-0 z-20 p-6">
+      <nav className="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="text-2xl font-light text-white">
+          <div className="text-xl sm:text-2xl font-light text-white">
             Crypto<span className="text-orange-500">Brain</span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2 sm:gap-4">
             <button
               onClick={handleSignIn}
-              className="text-white/70 hover:text-white transition-colors px-4 py-2"
+              className="text-white/70 hover:text-white transition-colors px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base"
             >
-              Sign In
+              <span className="hidden sm:inline">Sign In</span>
+              <span className="sm:hidden">In</span>
             </button>
             <button
               onClick={handleGetStarted}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-all duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 sm:px-6 sm:py-2 rounded-full transition-all duration-300 text-sm sm:text-base min-h-[36px] sm:min-h-[40px]"
             >
-              Sign Up
+              <span className="hidden sm:inline">Sign Up</span>
+              <span className="sm:hidden">Up</span>
             </button>
           </div>
         </div>
