@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Squares } from "./squares-background";
@@ -56,15 +55,13 @@ export default function Hero() {
               onClick={handleSignIn}
               className="text-white/70 hover:text-white transition-colors px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base"
             >
-              <span className="hidden sm:inline">Sign In</span>
-              <span className="sm:hidden">In</span>
+              Sign In
             </button>
             <button
               onClick={handleGetStarted}
               className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 sm:px-6 sm:py-2 rounded-full transition-all duration-300 text-sm sm:text-base min-h-[36px] sm:min-h-[40px]"
             >
-              <span className="hidden sm:inline">Sign Up</span>
-              <span className="sm:hidden">Up</span>
+              Sign Up
             </button>
           </div>
         </div>
