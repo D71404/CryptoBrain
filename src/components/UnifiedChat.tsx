@@ -1,477 +1,287 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Bot, TrendingUp, Twitter, Calendar } from 'lucide-react';
-import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, MessageCircle, TrendingUp, Calendar, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 interface ChatMessage {
   id: string;
   content: string;
-  isUser: boolean;
+  sender: 'user' | 'assistant';
   timestamp: Date;
-  tab?: 'insights' | 'social-pulse' | 'alpha-calendar';
-  filter?: string;
+  tabId: TabKey;
 }
 
-const TAB_CONFIG = {
-  insights: {
-    icon: TrendingUp,
-    title: 'Insights',
-    subtitle: 'News, Knowledge, Stats',
-    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook-test/8a8dcc89-9452-4e89-a5c6-9e10e73dab43',
-    examples: ["What's the latest Bitcoin news?", "Explain DeFi mechanisms", "Show me Ethereum price stats", "Recent crypto market analysis"]
+type TabKey = 'smart-search' | 'trending-news' | 'alpha-calendar';
+
+interface TabConfig {
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<any>;
+  examples: string[];
+  webhook: string;
+}
+
+const TAB_CONFIG: { [key in TabKey]: TabConfig } = {
+  'smart-search': {
+    title: 'Smart Search',
+    subtitle: 'Get AI-powered answers to any crypto question.',
+    icon: Search,
+    examples: [
+      'What are the top 5 cryptocurrencies by market cap?',
+      'Explain blockchain technology in simple terms.',
+      'What is the future of DeFi?',
+    ],
+    webhook: 'https://example.com/smart-search-webhook',
   },
-  'social-pulse': {
-    icon: Twitter,
-    title: 'Social Pulse',
-    subtitle: 'Top crypto tweets',
-    webhook: 'https://shanzacass.app.n8n.cloud/form-test/1e715e71-399d-4807-89ed-524ff9aeefc2',
-    examples: ["Top Bitcoin tweets today", "What's trending in crypto Twitter?", "Show viral crypto content", "Latest crypto influencer takes"]
+  'trending-news': {
+    title: 'Trending News',
+    subtitle: 'Discover the latest and hottest news in the crypto space.',
+    icon: TrendingUp,
+    examples: [
+      'What are the latest developments in Ethereum?',
+      'Any news about Bitcoin halving?',
+      'What are the current trends in NFT market?',
+    ],
+    webhook: 'https://example.com/trending-news-webhook',
   },
   'alpha-calendar': {
-    icon: Calendar,
     title: 'Alpha Calendar',
-    subtitle: 'Upcoming crypto events',
-    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook-test/4cf02cac-1783-4183-9969-1871f10a97ae',
-    examples: ["Upcoming Bitcoin conferences", "Show me ETF events", "Any fork announcements?", "Token listings this week"]
-  }
+    subtitle: 'Stay updated with upcoming crypto events and announcements.',
+    icon: Calendar,
+    examples: [
+      'What are the upcoming conferences in the crypto space?',
+      'Any major token airdrops scheduled?',
+      'What are the key dates for Bitcoin?',
+    ],
+    webhook: 'https://example.com/alpha-calendar-webhook',
+  },
 };
 
-const SOCIAL_PULSE_OPTIONS = [
-  { value: 'top', label: 'Top' },
-  { value: 'latest', label: 'Latest' }
-];
-
-const EVENT_TYPES = [
-  'Conference',
-  'Burn',
-  'ETF',
-  'Fork',
-  'Listings'
-];
-
-export const UnifiedChat = () => {
+export const UnifiedChat: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabKey>('smart-search');
+  const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<keyof typeof TAB_CONFIG>('insights');
-  const [calendarFilter, setCalendarFilter] = useState('all');
-  const [socialPulseType, setSocialPulseType] = useState('top');
-  const [showSocialPulseForm, setShowSocialPulseForm] = useState(false);
-  const [pendingSocialMessage, setPendingSocialMessage] = useState<string>('');
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    scrollToBottom()
   }, [messages]);
 
-  const sendToWebhook = async (messageData: any) => {
-    const tabConfig = TAB_CONFIG[activeTab];
-    const webhookUrl = tabConfig.webhook;
-    
-    if (!webhookUrl) {
-      throw new Error(`Webhook not configured for ${tabConfig.title}`);
-    }
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
-    try {
-      const payload = {
-        message: messageData.message,
-        tab: activeTab,
-        filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined,
-        socialPulseType: activeTab === 'social-pulse' ? socialPulseType : undefined,
-        timestamp: messageData.timestamp,
-        files: messageData.files?.map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type
-        })) || []
-      };
-
-      console.log('Sending to webhook:', payload);
-
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        console.log('Message sent to webhook successfully');
-        const responseData = await response.text();
-        return {
-          success: true,
-          data: responseData
-        };
-      } else {
-        console.error('Failed to send message to webhook:', response.status);
-        return {
-          success: false,
-          error: `Webhook returned status ${response.status}`
-        };
-      }
-    } catch (error) {
-      console.error('Error sending message to webhook:', error);
-      return {
-        success: false,
-        error: 'Failed to connect to webhook'
-      };
-    }
-  };
-
-  const handleSocialPulseSubmit = async () => {
-    if (!pendingSocialMessage.trim()) return;
-
-    setShowSocialPulseForm(false);
-    
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content: `${pendingSocialMessage} (${socialPulseType === 'top' ? 'Top Tweets' : 'Latest Tweets'})`,
-      isUser: true,
-      timestamp: new Date(),
-      tab: activeTab,
-      filter: socialPulseType
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setLoading(true);
-
-    try {
-      const webhookResponse = await sendToWebhook({
-        message: pendingSocialMessage,
-        timestamp: new Date().toISOString(),
-        files: []
-      });
-
-      let botContent = '';
-      if (webhookResponse.success) {
-        try {
-          const parsedResponse = JSON.parse(webhookResponse.data);
-          botContent = parsedResponse.output || 'Webhook responded successfully but with no output content.';
-        } catch (parseError) {
-          botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
-        }
-      } else {
-        const tabConfig = TAB_CONFIG[activeTab];
-        botContent = `${tabConfig.title} service is not available. ${webhookResponse.error}`;
-      }
-
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: botContent,
-        isUser: false,
-        timestamp: new Date(),
-        tab: activeTab,
-        filter: socialPulseType
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error('Error processing message:', error);
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: `Error occurred while processing your request. Please try again.`,
-        isUser: false,
-        timestamp: new Date(),
-        tab: activeTab
-      };
-      setMessages(prev => [...prev, botMessage]);
-    } finally {
-      setLoading(false);
-      setPendingSocialMessage('');
-    }
-  };
-
-  const handleSendMessage = async (message: string, files?: File[]) => {
-    if (!message.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a question",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // For Social Pulse tab, show form first
-    if (activeTab === 'social-pulse') {
-      setPendingSocialMessage(message);
-      setShowSocialPulseForm(true);
-      return;
-    }
+  const handleSendMessage = async () => {
+    if (!message.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       content: message,
-      isUser: true,
+      sender: 'user',
       timestamp: new Date(),
-      tab: activeTab,
-      filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined
+      tabId: activeTab
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setLoading(true);
+    setMessage('');
+    setIsLoading(true);
 
     try {
-      const webhookResponse = await sendToWebhook({
-        message: message,
-        timestamp: new Date().toISOString(),
-        files: files || []
+      const config = TAB_CONFIG[activeTab];
+      const response = await fetch(config.webhook, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          tab: activeTab,
+          timestamp: userMessage.timestamp.toISOString()
+        }),
       });
 
-      let botContent = '';
-      if (webhookResponse.success) {
-        try {
-          const parsedResponse = JSON.parse(webhookResponse.data);
-          botContent = parsedResponse.output || 'Webhook responded successfully but with no output content.';
-        } catch (parseError) {
-          botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
-        }
-      } else {
-        const tabConfig = TAB_CONFIG[activeTab];
-        botContent = `${tabConfig.title} service is not available. ${webhookResponse.error}`;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const botMessage: ChatMessage = {
+      const data = await response.text();
+      
+      const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: botContent,
-        isUser: false,
+        content: data || 'Response received',
+        sender: 'assistant',
         timestamp: new Date(),
-        tab: activeTab,
-        filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined
+        tabId: activeTab
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error processing message:', error);
-      const botMessage: ChatMessage = {
+      console.error('Error sending message:', error);
+      const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: `Error occurred while processing your request. Please try again.`,
-        isUser: false,
+        content: 'Sorry, there was an error processing your request. Please try again.',
+        sender: 'assistant',
         timestamp: new Date(),
-        tab: activeTab
+        tabId: activeTab
       };
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
   const handleExampleClick = (example: string) => {
-    handleSendMessage(example);
+    setMessage(example);
   };
 
-  const activeTabConfig = TAB_CONFIG[activeTab];
+  const currentMessages = messages.filter(msg => msg.tabId === activeTab);
 
   return (
-    <div className="flex flex-col h-[70vh] space-y-4 max-w-4xl mx-auto px-4">
-      {/* Header */}
-      <div className="text-center space-y-2 py-2">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-white">
-          CryptoHub AI
-        </h1>
-        <p className="text-gray-300 text-sm">Your intelligent crypto companion</p>
-      </div>
-      
-      {/* Social Pulse Form Modal */}
-      {showSocialPulseForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-white mb-4">Select Tweet Type</h3>
-            <p className="text-gray-300 text-sm mb-4">Choose what type of crypto tweets you want to see:</p>
-            
-            <Select value={socialPulseType} onValueChange={setSocialPulseType}>
-              <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white mb-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600">
-                {SOCIAL_PULSE_OPTIONS.map(option => (
-                  <SelectItem key={option.value} value={option.value} className="text-white hover:bg-gray-700">
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <div className="flex gap-3 justify-end">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowSocialPulseForm(false);
-                  setPendingSocialMessage('');
-                }}
-                className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSocialPulseSubmit}
-                className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
-              >
-                Get Tweets
-              </Button>
-            </div>
+    <div className="flex flex-col h-full bg-gradient-to-br from-[#0a0613] via-[#271a0d] to-[#0a0613] text-white">
+      {/* Mobile-friendly tab navigation */}
+      <div className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1 p-2 min-w-max sm:min-w-0 sm:justify-center">
+            {Object.entries(TAB_CONFIG).map(([key, config]) => {
+              const Icon = config.icon;
+              const isActive = activeTab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key as TabKey)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base ${
+                    isActive
+                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                      : 'text-white/60 hover:text-white/80 hover:bg-white/5'
+                  }`}
+                >
+                  <Icon size={16} className="sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{config.title}</span>
+                  <span className="sm:hidden">{config.title.split(' ')[0]}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Modern Tabs */}
-      <Tabs value={activeTab} onValueChange={value => setActiveTab(value as keyof typeof TAB_CONFIG)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-800/50 border border-gray-700 h-auto">
-          {Object.entries(TAB_CONFIG).map(([key, config]) => {
-            const IconComponent = config.icon;
-            return (
-              <TabsTrigger 
-                key={key} 
-                value={key} 
-                className="flex flex-col items-center gap-1 p-3 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700 min-h-[60px] text-center"
-              >
-                <div className="flex items-center gap-2">
-                  <IconComponent className="w-4 h-4 flex-shrink-0" />
-                  <div className="font-medium text-sm">{config.title}</div>
-                </div>
-                <div className="text-xs opacity-70 leading-tight">{config.subtitle}</div>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+      {/* Chat messages area */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+        {currentMessages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <div className="crypto-card rounded-xl p-4 sm:p-6 max-w-md w-full">
+              <h3 className="text-lg sm:text-xl font-semibold text-orange-400 mb-2 sm:mb-3">
+                {TAB_CONFIG[activeTab].title}
+              </h3>
+              <p className="text-white/60 mb-4 sm:mb-6 text-sm sm:text-base">
+                {TAB_CONFIG[activeTab].subtitle}
+              </p>
 
-        {Object.entries(TAB_CONFIG).map(([key, config]) => (
-          <TabsContent key={key} value={key} className="mt-4">
-            <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full h-[55vh]">
-              <CardHeader className="pb-3 border-b border-gray-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <config.icon className="w-5 h-5 text-orange-400" />
-                    <div>
-                      <CardTitle className="text-white text-lg">{config.title}</CardTitle>
-                      <CardDescription className="text-gray-400 text-sm">
-                        {config.subtitle}
-                      </CardDescription>
-                    </div>
-                  </div>
-                  
-                  {/* Alpha Calendar Event Types */}
-                  {key === 'alpha-calendar' && (
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="text-sm font-semibold text-orange-400">Event Types</div>
-                      <div className="flex flex-wrap gap-1 justify-end">
-                        {EVENT_TYPES.map(type => (
-                          <span key={type} className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
-                            {type}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardHeader>
-              
-              <CardContent className="flex-1 flex flex-col p-4 space-y-4">
-                <ScrollArea className="flex-1 pr-2">
-                  <div className="space-y-3 px-1">
-                    {messages.filter(msg => msg.tab === key).map(message => (
-                      <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-3 max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.isUser ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                            {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
-                          </div>
-                          <div className={`rounded-2xl px-4 py-3 ${message.isUser ? 'bg-blue-600 text-white max-w-full' : 'bg-gray-800 text-gray-100 border border-gray-700 max-w-full'}`}>
-                            <div className="text-sm leading-relaxed">
-                              {message.isUser ? (
-                                <div className="whitespace-pre-wrap break-words">{message.content}</div>
-                              ) : (
-                                <div className="space-y-2">
-                                  {message.content.replace(/\*\*/g, '') // Remove bold markers
-                                    .replace(/\*/g, '') // Remove asterisks
-                                    .split('\n').map((line, index) => {
-                                      // Check if line contains links
-                                      const linkRegex = /(https?:\/\/[^\s]+)/g;
-                                      if (linkRegex.test(line)) {
-                                        const parts = line.split(linkRegex);
-                                        return (
-                                          <div key={index} className="break-words">
-                                            {parts.map((part, partIndex) => {
-                                              if (linkRegex.test(part)) {
-                                                return (
-                                                  <a 
-                                                    key={partIndex} 
-                                                    href={part} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer" 
-                                                    className="text-orange-400 hover:text-orange-300 underline break-all inline-block"
-                                                  >
-                                                    {part}
-                                                  </a>
-                                                );
-                                              }
-                                              return <span key={partIndex} className="break-words">{part}</span>;
-                                            })}
-                                          </div>
-                                        );
-                                      }
-                                      return line ? <div key={index} className="break-words">{line}</div> : <div key={index} className="h-2" />;
-                                    })}
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-xs opacity-60 mt-2 flex flex-wrap items-center gap-2">
-                              <span>{message.timestamp.toLocaleTimeString()}</span>
-                              {message.filter && message.filter !== 'all' && (
-                                <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
-                                  {message.filter === 'top' ? 'Top Tweets' : message.filter === 'latest' ? 'Latest Tweets' : message.filter}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+              {/* Alpha Calendar Event Types - Mobile optimized */}
+              {activeTab === 'alpha-calendar' && (
+                <div className="mb-4 sm:mb-6">
+                  <h4 className="text-base sm:text-lg font-bold text-orange-400 mb-3 sm:mb-4">
+                    Event Types
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+                    {['Conferences', 'ETF Events', 'Fork Announcements', 'Token Listings', 'Airdrops', 'Staking Events'].map((type) => (
+                      <Badge 
+                        key={type} 
+                        variant="outline" 
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-1"
+                      >
+                        {type}
+                      </Badge>
                     ))}
-                    
-                    {loading && activeTab === key && (
-                      <div className="flex gap-4 justify-start">
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                            <Bot className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3">
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                              <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div ref={messagesEndRef} />
                   </div>
-                </ScrollArea>
-                
-                {/* Prompt Input Box moved inside card */}
-                <div className="pt-2 border-t border-gray-700">
-                  <PromptInputBox 
-                    onSend={handleSendMessage} 
-                    isLoading={loading} 
-                    placeholder={`Ask about ${activeTabConfig.title.toLowerCase()}...`} 
-                    activeSection="knowledge" 
-                  />
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
-      </Tabs>
+              )}
+
+              <div className="text-left">
+                <p className="text-white/50 mb-2 sm:mb-3 text-xs sm:text-sm">Try asking:</p>
+                <div className="space-y-1.5 sm:space-y-2">
+                  {TAB_CONFIG[activeTab].examples.map((example, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleExampleClick(example)}
+                      className="block w-full text-left px-3 py-2 sm:px-4 sm:py-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-xs sm:text-sm text-white/70 hover:text-white"
+                    >
+                      "{example}"
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {currentMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md rounded-lg px-3 py-2 sm:px-4 sm:py-3 ${
+                    msg.sender === 'user'
+                      ? 'bg-orange-500 text-white'
+                      : 'crypto-card text-white'
+                  }`}
+                >
+                  <p className="text-sm sm:text-base whitespace-pre-wrap break-words">{msg.content}</p>
+                  <p className={`text-xs mt-1 sm:mt-2 ${
+                    msg.sender === 'user' ? 'text-orange-100' : 'text-white/50'
+                  }`}>
+                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="crypto-card rounded-lg px-3 py-2 sm:px-4 sm:py-3 max-w-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-orange-500"></div>
+                    <p className="text-white/70 text-sm sm:text-base">Thinking...</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </>
+        )}
+      </div>
+
+      {/* Mobile-optimized input area */}
+      <div className="border-t border-white/10 bg-black/20 backdrop-blur-sm p-3 sm:p-4">
+        <div className="flex gap-2 sm:gap-3 items-end">
+          <div className="flex-1 relative">
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder={`Ask about ${TAB_CONFIG[activeTab].title.toLowerCase()}...`}
+              className="w-full bg-white/5 border-white/20 text-white placeholder-white/50 rounded-lg pr-3 py-2 sm:py-3 text-sm sm:text-base min-h-[40px] sm:min-h-[44px] focus:border-orange-500/50"
+              disabled={isLoading}
+            />
+          </div>
+          <Button
+            onClick={handleSendMessage}
+            disabled={!message.trim() || isLoading}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg min-h-[40px] sm:min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center"
+          >
+            <Send size={16} className="sm:w-4 sm:h-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
