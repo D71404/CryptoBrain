@@ -204,7 +204,11 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
               </div>
               <label
                 htmlFor="password"
-                className="absolute left-4 top-4 text-white/60 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs peer-focus:text-orange-400 peer-focus:font-medium peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-orange-400 peer-[:not(:placeholder-shown)]:font-medium pointer-events-none"
+                className={`absolute left-4 transition-all duration-200 pointer-events-none ${
+                  isPasswordFocused || password 
+                    ? 'top-1 text-xs text-orange-400 font-medium' 
+                    : 'top-4 text-base text-white/60'
+                }`}
               >
                 Password
               </label>
