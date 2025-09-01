@@ -153,53 +153,60 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
           </div>
 
           <form onSubmit={onSubmit} className="space-y-6">
-            <div className={`relative ${isEmailFocused || email ? 'focused' : ''} ${!isEmailValid && email ? 'invalid' : ''}`}>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={handleEmailChange}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => setIsEmailFocused(false)}
-                required
-                className="w-full h-12 px-4 bg-white/5 border border-white/10 rounded-md text-white placeholder-transparent focus:outline-none focus:border-orange-500 transition-colors peer"
-                placeholder="Email Address"
-              />
+            <div className={`relative group ${isEmailFocused || email ? 'focused' : ''} ${!isEmailValid && email ? 'invalid' : ''}`}>
+              <div className="relative">
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => setIsEmailFocused(false)}
+                  required
+                  className="w-full h-14 px-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-orange-400 focus:bg-white/15 hover:bg-white/10 transition-all duration-300 peer shadow-lg shadow-black/10 focus:shadow-orange-500/20 focus:shadow-lg"
+                  placeholder="Email Address"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-orange-500/0 via-orange-500/0 to-orange-500/0 opacity-0 peer-focus:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
+              </div>
               <label
                 htmlFor="email"
-                className="absolute left-4 top-3 text-white/60 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-orange-500 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-orange-500"
+                className="absolute left-4 top-4 text-white/60 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs peer-focus:text-orange-400 peer-focus:font-medium peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-orange-400 peer-[:not(:placeholder-shown)]:font-medium pointer-events-none"
               >
                 Email Address
               </label>
               {!isEmailValid && email && (
-                <span className="text-red-400 text-sm mt-1 block">
+                <span className="text-red-400 text-sm mt-2 block flex items-center gap-1 animate-fade-in">
+                  <span className="w-1 h-1 bg-red-400 rounded-full"></span>
                   Please enter a valid email
                 </span>
               )}
             </div>
 
-            <div className={`relative ${isPasswordFocused || password ? 'focused' : ''}`}>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={(e) => onPasswordChange(e.target.value)}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-                required
-                className="w-full h-12 px-4 pr-12 bg-white/5 border border-white/10 rounded-md text-white placeholder-transparent focus:outline-none focus:border-orange-500 transition-colors peer"
-                placeholder="Password"
-                minLength={6}
-              />
+            <div className={`relative group ${isPasswordFocused || password ? 'focused' : ''}`}>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => onPasswordChange(e.target.value)}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  required
+                  className="w-full h-14 px-4 pr-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-orange-400 focus:bg-white/15 hover:bg-white/10 transition-all duration-300 peer shadow-lg shadow-black/10 focus:shadow-orange-500/20 focus:shadow-lg"
+                  placeholder="Password"
+                  minLength={6}
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-orange-500/0 via-orange-500/0 to-orange-500/0 opacity-0 peer-focus:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
+              </div>
               <label
                 htmlFor="password"
-                className="absolute left-4 top-3 text-white/60 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-orange-500 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-orange-500"
+                className="absolute left-4 top-4 text-white/60 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-xs peer-focus:text-orange-400 peer-focus:font-medium peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-orange-400 peer-[:not(:placeholder-shown)]:font-medium pointer-events-none"
               >
                 Password
               </label>
               <button
                 type="button"
-                className="absolute right-4 top-3 text-white/60 hover:text-orange-500 transition-colors"
+                className="absolute right-4 top-4 text-white/60 hover:text-orange-400 transition-all duration-200 hover:scale-110 focus:outline-none focus:text-orange-400"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
