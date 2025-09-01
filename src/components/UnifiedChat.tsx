@@ -376,8 +376,8 @@ export const UnifiedChat = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-4 space-y-4">
-                <ScrollArea className="flex-1 pr-2">
+              <CardContent className="flex-1 flex flex-col p-4">
+                <ScrollArea className="flex-1 pr-2 mb-4">
                   <div className="space-y-3 px-1">
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
