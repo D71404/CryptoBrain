@@ -155,11 +155,18 @@ export const UnifiedChat = () => {
 
       let botContent = '';
       if (webhookResponse.success) {
-        try {
-          const parsedResponse = JSON.parse(webhookResponse.data);
-          botContent = parsedResponse.output || 'Webhook responded successfully but with no output content.';
-        } catch (parseError) {
-          botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
+        console.log('Webhook response data:', webhookResponse.data);
+        
+        if (!webhookResponse.data || webhookResponse.data.trim() === '') {
+          botContent = 'The Alpha Calendar service responded but returned no data. The webhook may need to be configured to return results.';
+        } else {
+          try {
+            const parsedResponse = JSON.parse(webhookResponse.data);
+            botContent = parsedResponse.output || parsedResponse.message || parsedResponse.result || 'Webhook responded but without expected output format.';
+          } catch (parseError) {
+            // If it's not JSON, treat as plain text
+            botContent = webhookResponse.data;
+          }
         }
       } else {
         const tabConfig = TAB_CONFIG[activeTab];
@@ -230,11 +237,18 @@ export const UnifiedChat = () => {
 
       let botContent = '';
       if (webhookResponse.success) {
-        try {
-          const parsedResponse = JSON.parse(webhookResponse.data);
-          botContent = parsedResponse.output || 'Webhook responded successfully but with no output content.';
-        } catch (parseError) {
-          botContent = webhookResponse.data || 'Webhook responded successfully but with no content.';
+        console.log('Webhook response data:', webhookResponse.data);
+        
+        if (!webhookResponse.data || webhookResponse.data.trim() === '') {
+          botContent = 'The Social Pulse service responded but returned no data. The webhook may need to be configured to return results.';
+        } else {
+          try {
+            const parsedResponse = JSON.parse(webhookResponse.data);
+            botContent = parsedResponse.output || parsedResponse.message || parsedResponse.result || 'Webhook responded but without expected output format.';
+          } catch (parseError) {
+            // If it's not JSON, treat as plain text
+            botContent = webhookResponse.data;
+          }
         }
       } else {
         const tabConfig = TAB_CONFIG[activeTab];
