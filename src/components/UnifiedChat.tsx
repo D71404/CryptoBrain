@@ -37,7 +37,7 @@ const TAB_CONFIG = {
     icon: Calendar,
     title: 'Alpha Calendar',
     subtitle: 'Upcoming crypto events',
-    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook-test/4cf02cac-1783-4183-9969-1871f10a97ae',
+    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook/4cf02cac-1783-4183-9969-1871f10a97ae',
     examples: ["Upcoming Bitcoin conferences", "Show me ETF events", "Any fork announcements?", "Token listings this week"]
   }
 };
