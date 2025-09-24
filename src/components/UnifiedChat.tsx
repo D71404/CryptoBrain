@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Bot, TrendingUp, Twitter, Calendar } from 'lucide-react';
+import { User, Bot, TrendingUp, Calendar } from 'lucide-react';
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 
 interface ChatMessage {
@@ -14,7 +14,7 @@ interface ChatMessage {
   content: string;
   isUser: boolean;
   timestamp: Date;
-  tab?: 'insights' | 'social-pulse' | 'alpha-calendar';
+  tab?: 'insights' | 'alpha-calendar';
   filter?: string;
 }
 
@@ -26,13 +26,6 @@ const TAB_CONFIG = {
     webhook: 'https://n8n.srv904629.hstgr.cloud/webhook/8a8dcc89-9452-4e89-a5c6-9e10e73dab43',
     examples: ["What's the latest Bitcoin news?", "Explain DeFi mechanisms", "Show me Ethereum price stats", "Recent crypto market analysis"]
   },
-  'social-pulse': {
-    icon: Twitter,
-    title: 'Social Pulse',
-    subtitle: 'Top crypto tweets',
-    webhook: 'https://shanzacass.app.n8n.cloud/form-test/1e715e71-399d-4807-89ed-524ff9aeefc2',
-    examples: ["Top Bitcoin tweets today", "What's trending in crypto Twitter?", "Show viral crypto content", "Latest crypto influencer takes"]
-  },
   'alpha-calendar': {
     icon: Calendar,
     title: 'Alpha Calendar',
@@ -42,10 +35,6 @@ const TAB_CONFIG = {
   }
 };
 
-const SOCIAL_PULSE_OPTIONS = [
-  { value: 'top', label: 'Top' },
-  { value: 'latest', label: 'Latest' }
-];
 
 const EVENT_TYPES = [
   'Conference',
@@ -60,9 +49,6 @@ export const UnifiedChat = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof typeof TAB_CONFIG>('insights');
   const [calendarFilter, setCalendarFilter] = useState('all');
-  const [socialPulseType, setSocialPulseType] = useState('top');
-  const [showSocialPulseForm, setShowSocialPulseForm] = useState(false);
-  const [pendingSocialMessage, setPendingSocialMessage] = useState<string>('');
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +73,6 @@ export const UnifiedChat = () => {
         message: messageData.message,
         tab: activeTab,
         filter: activeTab === 'alpha-calendar' ? calendarFilter : undefined,
-        socialPulseType: activeTab === 'social-pulse' ? socialPulseType : undefined,
         timestamp: messageData.timestamp,
         files: messageData.files?.map(file => ({
           name: file.name,
@@ -129,75 +114,6 @@ export const UnifiedChat = () => {
     }
   };
 
-  const handleSocialPulseSubmit = async () => {
-    if (!pendingSocialMessage.trim()) return;
-
-    setShowSocialPulseForm(false);
-    
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content: `${pendingSocialMessage} (${socialPulseType === 'top' ? 'Top Tweets' : 'Latest Tweets'})`,
-      isUser: true,
-      timestamp: new Date(),
-      tab: activeTab,
-      filter: socialPulseType
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setLoading(true);
-
-    try {
-      const webhookResponse = await sendToWebhook({
-        message: pendingSocialMessage,
-        timestamp: new Date().toISOString(),
-        files: []
-      });
-
-      let botContent = '';
-      if (webhookResponse.success) {
-        console.log('Webhook response data:', webhookResponse.data);
-        
-        if (!webhookResponse.data || webhookResponse.data.trim() === '') {
-          botContent = 'The Alpha Calendar service responded but returned no data. The webhook may need to be configured to return results.';
-        } else {
-          try {
-            const parsedResponse = JSON.parse(webhookResponse.data);
-            botContent = parsedResponse.output || parsedResponse.message || parsedResponse.result || 'Webhook responded but without expected output format.';
-          } catch (parseError) {
-            // If it's not JSON, treat as plain text
-            botContent = webhookResponse.data;
-          }
-        }
-      } else {
-        const tabConfig = TAB_CONFIG[activeTab];
-        botContent = `${tabConfig.title} service is not available. ${webhookResponse.error}`;
-      }
-
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: botContent,
-        isUser: false,
-        timestamp: new Date(),
-        tab: activeTab,
-        filter: socialPulseType
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error('Error processing message:', error);
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: `Error occurred while processing your request. Please try again.`,
-        isUser: false,
-        timestamp: new Date(),
-        tab: activeTab
-      };
-      setMessages(prev => [...prev, botMessage]);
-    } finally {
-      setLoading(false);
-      setPendingSocialMessage('');
-    }
-  };
 
   const handleSendMessage = async (message: string, files?: File[]) => {
     if (!message.trim()) {
@@ -206,13 +122,6 @@ export const UnifiedChat = () => {
         description: "Please enter a question",
         variant: "destructive"
       });
-      return;
-    }
-
-    // For Social Pulse tab, show form first
-    if (activeTab === 'social-pulse') {
-      setPendingSocialMessage(message);
-      setShowSocialPulseForm(true);
       return;
     }
 
@@ -240,7 +149,7 @@ export const UnifiedChat = () => {
         console.log('Webhook response data:', webhookResponse.data);
         
         if (!webhookResponse.data || webhookResponse.data.trim() === '') {
-          botContent = 'The Social Pulse service responded but returned no data. The webhook may need to be configured to return results.';
+          botContent = 'The service responded but returned no data. The webhook may need to be configured to return results.';
         } else {
           try {
             const parsedResponse = JSON.parse(webhookResponse.data);
@@ -295,52 +204,10 @@ export const UnifiedChat = () => {
         </h1>
         <p className="text-gray-300 text-sm">Your intelligent crypto companion</p>
       </div>
-      
-      {/* Social Pulse Form Modal */}
-      {showSocialPulseForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-white mb-4">Select Tweet Type</h3>
-            <p className="text-gray-300 text-sm mb-4">Choose what type of crypto tweets you want to see:</p>
-            
-            <Select value={socialPulseType} onValueChange={setSocialPulseType}>
-              <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white mb-4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600">
-                {SOCIAL_PULSE_OPTIONS.map(option => (
-                  <SelectItem key={option.value} value={option.value} className="text-white hover:bg-gray-700">
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <div className="flex gap-3 justify-end">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowSocialPulseForm(false);
-                  setPendingSocialMessage('');
-                }}
-                className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSocialPulseSubmit}
-                className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
-              >
-                Get Tweets
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modern Tabs */}
       <Tabs value={activeTab} onValueChange={value => setActiveTab(value as keyof typeof TAB_CONFIG)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-800/50 border border-gray-700 h-auto">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-800/50 border border-gray-700 h-auto">
           {Object.entries(TAB_CONFIG).map(([key, config]) => {
             const IconComponent = config.icon;
             return (
@@ -442,7 +309,7 @@ export const UnifiedChat = () => {
                               <span>{message.timestamp.toLocaleTimeString()}</span>
                               {message.filter && message.filter !== 'all' && (
                                 <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
-                                  {message.filter === 'top' ? 'Top Tweets' : message.filter === 'latest' ? 'Latest Tweets' : message.filter}
+                                  {message.filter}
                                 </span>
                               )}
                             </div>
