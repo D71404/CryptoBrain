@@ -51,10 +51,10 @@ export default function Hero() {
           <div className="text-2xl font-light text-white">
             Crypto<span className="text-orange-500">Brain</span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             <button
               onClick={handleSignIn}
-              className="text-white/70 hover:text-white transition-colors px-4 py-2"
+              className="text-white/70 hover:text-white transition-colors px-6 py-2 rounded-full border border-transparent hover:border-white/20"
             >
               Sign In
             </button>
