@@ -196,13 +196,13 @@ export const UnifiedChat = () => {
   const activeTabConfig = TAB_CONFIG[activeTab];
 
   return (
-    <div className="flex flex-col h-[70vh] space-y-4 max-w-4xl mx-auto px-4">
+    <div className="flex flex-col h-[75vh] sm:h-[70vh] space-y-3 sm:space-y-4 max-w-4xl mx-auto px-2 sm:px-4 w-full">
       {/* Header */}
-      <div className="text-center space-y-2 py-2">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-white">
+      <div className="text-center space-y-1 sm:space-y-2 py-1 sm:py-2">
+        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-orange-500 to-amber-400 bg-clip-text text-white">
           CryptoHub AI
         </h1>
-        <p className="text-gray-300 text-sm">Your intelligent crypto companion</p>
+        <p className="text-gray-300 text-xs sm:text-sm">Your intelligent crypto companion</p>
       </div>
 
       {/* Modern Tabs */}
@@ -214,13 +214,13 @@ export const UnifiedChat = () => {
               <TabsTrigger 
                 key={key} 
                 value={key} 
-                className="flex flex-col items-center gap-1 p-3 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700 min-h-[60px] text-center"
+                className="flex flex-col items-center gap-1 p-2 sm:p-3 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700 min-h-[50px] sm:min-h-[60px] text-center"
               >
-                <div className="flex items-center gap-2">
-                  <IconComponent className="w-4 h-4 flex-shrink-0" />
-                  <div className="font-medium text-sm">{config.title}</div>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <div className="font-medium text-xs sm:text-sm">{config.title}</div>
                 </div>
-                <div className="text-xs opacity-70 leading-tight">{config.subtitle}</div>
+                <div className="text-xs opacity-70 leading-tight hidden sm:block">{config.subtitle}</div>
               </TabsTrigger>
             );
           })}
@@ -228,14 +228,14 @@ export const UnifiedChat = () => {
 
         {Object.entries(TAB_CONFIG).map(([key, config]) => (
           <TabsContent key={key} value={key} className="mt-4">
-            <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full h-[55vh]">
-              <CardHeader className="pb-3 border-b border-gray-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <config.icon className="w-5 h-5 text-orange-400" />
+            <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full h-[60vh] sm:h-[55vh]">
+              <CardHeader className="pb-2 sm:pb-3 border-b border-gray-700 px-3 sm:px-6 py-3 sm:py-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <config.icon className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400 flex-shrink-0" />
                     <div>
-                      <CardTitle className="text-white text-lg">{config.title}</CardTitle>
-                      <CardDescription className="text-gray-400 text-sm">
+                      <CardTitle className="text-white text-base sm:text-lg">{config.title}</CardTitle>
+                      <CardDescription className="text-gray-400 text-xs sm:text-sm">
                         {config.subtitle}
                       </CardDescription>
                     </div>
@@ -243,9 +243,9 @@ export const UnifiedChat = () => {
                   
                   {/* Alpha Calendar Event Types */}
                   {key === 'alpha-calendar' && (
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="text-sm font-semibold text-orange-400">Event Types</div>
-                      <div className="flex flex-wrap gap-1 justify-end">
+                    <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
+                      <div className="text-xs sm:text-sm font-semibold text-orange-400">Event Types</div>
+                      <div className="flex flex-wrap gap-1 justify-start sm:justify-end">
                         {EVENT_TYPES.map(type => (
                           <span key={type} className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">
                             {type}
@@ -257,17 +257,17 @@ export const UnifiedChat = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-4">
-                <ScrollArea className="flex-1 pr-2 mb-4">
-                  <div className="space-y-3 px-1">
+              <CardContent className="flex-1 flex flex-col p-2 sm:p-4">
+                <ScrollArea className="flex-1 pr-1 sm:pr-2 mb-3 sm:mb-4">
+                  <div className="space-y-2 sm:space-y-3 px-1">
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-3 max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.isUser ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                            {message.isUser ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
+                        <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div className={`flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${message.isUser ? 'bg-blue-600' : 'bg-gray-700'}`}>
+                            {message.isUser ? <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" /> : <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />}
                           </div>
-                          <div className={`rounded-2xl px-4 py-3 ${message.isUser ? 'bg-blue-600 text-white max-w-full' : 'bg-gray-800 text-gray-100 border border-gray-700 max-w-full'}`}>
-                            <div className="text-sm leading-relaxed">
+                          <div className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 ${message.isUser ? 'bg-blue-600 text-white max-w-full' : 'bg-gray-800 text-gray-100 border border-gray-700 max-w-full'}`}>
+                            <div className="text-xs sm:text-sm leading-relaxed">
                               {message.isUser ? (
                                 <div className="whitespace-pre-wrap break-words">{message.content}</div>
                               ) : (
@@ -319,12 +319,12 @@ export const UnifiedChat = () => {
                     ))}
                     
                     {loading && activeTab === key && (
-                      <div className="flex gap-4 justify-start">
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                            <Bot className="w-5 h-5 text-white" />
+                      <div className="flex gap-2 sm:gap-4 justify-start">
+                        <div className="flex gap-2 sm:gap-4">
+                          <div className="flex-shrink-0 w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                            <Bot className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
                           </div>
-                          <div className="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3">
+                          <div className="bg-gray-800 border border-gray-700 rounded-2xl px-3 py-2 sm:px-4 sm:py-3">
                             <div className="flex items-center gap-1">
                               <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                               <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
@@ -340,7 +340,7 @@ export const UnifiedChat = () => {
                 </ScrollArea>
                 
                 {/* Prompt Input Box moved inside card */}
-                <div className="pt-2 border-t border-gray-700">
+                <div className="pt-2 sm:pt-3 border-t border-gray-700">
                   <PromptInputBox 
                     onSend={handleSendMessage} 
                     isLoading={loading} 
