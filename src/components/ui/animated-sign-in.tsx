@@ -8,7 +8,9 @@ import {
   Github,
   Twitter,
   Linkedin,
+  ArrowLeft,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AnimatedSignInProps {
   email: string;
@@ -31,6 +33,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
   isSignUp,
   onToggleMode,
 }) => {
+  const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
@@ -143,7 +146,16 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
 
       <div className="w-full max-w-md relative z-10">
         <div className="crypto-card rounded-lg p-8 shadow-2xl animate-fade-in">
-          <div className="text-center mb-8">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate('/')}
+            className="absolute top-4 left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/70 hover:text-white transition-all duration-200 backdrop-blur-sm"
+            aria-label="Go back to home"
+          >
+            <ArrowLeft size={18} />
+          </button>
+
+          <div className="text-center mb-8 pt-4">
             <h1 className="text-3xl font-light text-white mb-2">
               {isSignUp ? 'Join' : 'Welcome to'} <span className="text-orange-500">CryptoBrain</span>
             </h1>
