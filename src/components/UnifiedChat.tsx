@@ -229,7 +229,7 @@ export const UnifiedChat = () => {
 
         {Object.entries(TAB_CONFIG).map(([key, config]) => (
           <TabsContent key={key} value={key} className="mt-4">
-            <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full h-[60vh] sm:h-[55vh]">
+            <Card className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-sm border-gray-700 w-full h-full">
               <CardHeader className="pb-2 sm:pb-3 border-b border-gray-700 px-3 sm:px-6 py-3 sm:py-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                   <div className="flex items-center gap-2 sm:gap-3">
@@ -258,7 +258,7 @@ export const UnifiedChat = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-2 sm:p-4">
+              <CardContent className="flex-1 flex flex-col p-2 sm:p-4 min-h-0">
                 <ScrollArea className="flex-1 pr-1 sm:pr-2 mb-3 sm:mb-4">
                   <div className="space-y-2 sm:space-y-3 px-1">
                     {messages.filter(msg => msg.tab === key).map(message => (
