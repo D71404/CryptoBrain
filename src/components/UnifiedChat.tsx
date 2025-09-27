@@ -264,8 +264,8 @@ export const UnifiedChat = () => {
                     {messages.filter(msg => msg.tab === key).map(message => (
                       <div key={message.id} className={`flex w-full ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className={`flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${message.isUser ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                            {message.isUser ? <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" /> : <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />}
+                          <div className={`flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg ${message.isUser ? 'bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-500/25' : 'bg-gradient-to-br from-gray-600 to-gray-800 shadow-gray-500/25'}`}>
+                            {message.isUser ? <User className="w-3 h-3 sm:w-4 sm:h-4 text-white drop-shadow-sm" /> : <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white drop-shadow-sm" />}
                           </div>
                           <div className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 ${message.isUser ? 'bg-blue-600 text-white max-w-full' : 'bg-gray-800 text-gray-100 border border-gray-700 max-w-full'}`}>
                             <div className="text-xs sm:text-sm leading-relaxed">
