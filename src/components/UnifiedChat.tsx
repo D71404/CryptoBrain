@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, Bot, TrendingUp, Calendar } from 'lucide-react';
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import ClassicLoader from "@/components/ui/loader";
 
 interface ChatMessage {
   id: string;
@@ -325,10 +326,9 @@ export const UnifiedChat = () => {
                             <Bot className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
                           </div>
                           <div className="bg-gray-800 border border-gray-700 rounded-2xl px-3 py-2 sm:px-4 sm:py-3">
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                              <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                            <div className="flex items-center gap-3">
+                              <ClassicLoader />
+                              <span className="text-gray-300 text-xs sm:text-sm">Loading...</span>
                             </div>
                           </div>
                         </div>
