@@ -7,11 +7,11 @@ export default function Hero() {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate('/auth');
+    navigate('/auth?mode=signup');
   };
 
   const handleSignIn = () => {
-    navigate('/auth');
+    navigate('/auth?mode=signin');
   };
 
   return (
