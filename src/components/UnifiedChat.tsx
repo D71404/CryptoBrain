@@ -38,6 +38,7 @@ export const UnifiedChat = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof typeof TAB_CONFIG>('insights');
   const [calendarFilter, setCalendarFilter] = useState('all');
+  const abortControllerRef = useRef<AbortController | null>(null);
   const {
     toast
   } = useToast();
@@ -57,6 +58,10 @@ export const UnifiedChat = () => {
       throw new Error(`Webhook not configured for ${tabConfig.title}`);
     }
     try {
+      // Create new AbortController for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
       const payload = {
         message: messageData.message,
         tab: activeTab,
@@ -74,7 +79,8 @@ export const UnifiedChat = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: abortController.signal
       });
       if (response.ok) {
         console.log('Message sent to webhook successfully');
@@ -91,6 +97,13 @@ export const UnifiedChat = () => {
         };
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Request was aborted');
+        return {
+          success: false,
+          error: 'Request was stopped by user'
+        };
+      }
       console.error('Error sending message to webhook:', error);
       return {
         success: false,
@@ -166,6 +179,13 @@ export const UnifiedChat = () => {
   };
   const handleExampleClick = (example: string) => {
     handleSendMessage(example);
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setLoading(false);
+    }
   };
   const activeTabConfig = TAB_CONFIG[activeTab];
   return <div className="flex flex-col h-[75vh] sm:h-[70vh] space-y-3 sm:space-y-4 max-w-4xl mx-auto px-2 sm:px-4 w-full">
@@ -279,7 +299,7 @@ export const UnifiedChat = () => {
                 
                 {/* Prompt Input Box moved inside card */}
                 <div className="pt-2 sm:pt-3 border-t border-gray-700">
-                  <PromptInputBox onSend={handleSendMessage} isLoading={loading} placeholder={`Ask about ${activeTabConfig.title.toLowerCase()}...`} activeSection="knowledge" />
+                  <PromptInputBox onSend={handleSendMessage} onStop={handleStop} isLoading={loading} placeholder={`Ask about ${activeTabConfig.title.toLowerCase()}...`} activeSection="knowledge" />
                 </div>
               </CardContent>
             </Card>

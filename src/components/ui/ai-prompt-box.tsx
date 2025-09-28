@@ -436,6 +436,7 @@ const CustomDivider: React.FC = () => (
 // Main PromptInputBox Component
 interface PromptInputBoxProps {
   onSend?: (message: string, files?: File[]) => void;
+  onStop?: () => void;
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
@@ -464,7 +465,7 @@ const SECTION_BUTTONS = {
 };
 
 export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxProps>((props, ref) => {
-  const { onSend = () => {}, isLoading = false, placeholder = "Type your message here...", className, activeSection = 'knowledge' } = props;
+  const { onSend = () => {}, onStop, isLoading = false, placeholder = "Type your message here...", className, activeSection = 'knowledge' } = props;
   const [input, setInput] = React.useState("");
   const [files, setFiles] = React.useState<File[]>([]);
   const [filePreviews, setFilePreviews] = React.useState<{ [key: string]: string }>({});
@@ -675,12 +676,16 @@ export const PromptInputBox = React.forwardRef<HTMLDivElement, PromptInputBoxPro
                   : "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white"
               )}
               onClick={() => {
-                if (hasContent) handleSubmit();
+                if (isLoading) {
+                  onStop?.();
+                } else if (hasContent) {
+                  handleSubmit();
+                }
               }}
-              disabled={isLoading && !hasContent}
+              disabled={!hasContent && !isLoading}
             >
               {isLoading ? (
-                <Square className="h-4 w-4 fill-current animate-pulse" />
+                <X className="h-4 w-4" />
               ) : (
                 <ArrowUp className="h-4 w-4" />
               )}
