@@ -270,17 +270,6 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-center space-x-4">
-            <button className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
-              <Github size={18} className="text-white" />
-            </button>
-            <button className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
-              <Twitter size={18} className="text-white" />
-            </button>
-            <button className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
-              <Linkedin size={18} className="text-white" />
-            </button>
-          </div>
 
           <div className="mt-6 text-center">
             <button
