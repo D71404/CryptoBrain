@@ -51,16 +51,16 @@ export default function Hero() {
           <div className="text-2xl font-light text-white">
             Crypto<span className="text-orange-500">Brain</span>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-2 sm:gap-4 items-center">
             <button
               onClick={handleSignIn}
-              className="text-white/70 hover:text-white transition-colors px-6 py-2 rounded-full border border-transparent hover:border-white/20"
+              className="text-white/70 hover:text-white transition-colors px-3 py-1.5 sm:px-6 sm:py-2 rounded-full border border-transparent hover:border-white/20 text-sm sm:text-base"
             >
               Sign In
             </button>
             <button
               onClick={handleGetStarted}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-all duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 sm:px-6 sm:py-2 rounded-full transition-all duration-300 text-sm sm:text-base"
             >
               Sign Up
             </button>
