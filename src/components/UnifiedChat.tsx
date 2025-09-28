@@ -24,7 +24,7 @@ const TAB_CONFIG = {
     icon: TrendingUp,
     title: 'Insights',
     subtitle: 'News, Knowledge, Stats',
-    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook/8a8dcc89-9452-4e89-a5c6-9e10e73dab43',
+    webhook: 'https://n8n.srv904629.hstgr.cloud/webhook-test/8a8dcc89-9452-4e89-a5c6-9e10e73dab43',
     examples: ["What's the latest Bitcoin news?", "Explain DeFi mechanisms", "Show me Ethereum price stats", "Recent crypto market analysis"]
   },
   'alpha-calendar': {
